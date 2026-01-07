@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prime Imóveis - Encontre o Lar dos Seus Sonhos</title>
+    <title>Seu Novo Imóvel - Portal Imobiliário</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +21,7 @@
             --primary-color: #1a3a52;
             --primary-dark: #0f2537;
             --accent-color: #2c5f7c;
+            --success-color: #28a745;
             --text-dark: #333333;
             --text-light: #666666;
             --bg-light: #f8f9fa;
@@ -142,6 +143,21 @@
             box-shadow: var(--shadow-hover);
         }
 
+        .btn-success {
+            background: var(--success-color);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
         .mobile-toggle {
             display: none;
             font-size: 1.5rem;
@@ -173,14 +189,20 @@
 
         .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .hero p {
             font-size: 1.3rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             opacity: 0.95;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
         }
 
         .search-box {
@@ -236,6 +258,121 @@
         .btn-search:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
+        }
+
+        /* ============================================
+           HOW IT WORKS SECTION
+        ============================================ */
+        .how-it-works {
+            padding: 5rem 0;
+            background: var(--white);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .step-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .step-card p {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        /* ============================================
+           CTA SECTION
+        ============================================ */
+        .cta-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary-color);
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            padding: 1rem 2.5rem;
+            border: 2px solid var(--white);
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .btn-outline:hover {
+            background: var(--white);
+            color: var(--primary-color);
+            transform: translateY(-3px);
         }
 
         /* ============================================
@@ -312,6 +449,18 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+        .property-type {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--success-color);
+            color: var(--white);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
         .property-info {
             padding: 1.5rem;
         }
@@ -351,72 +500,111 @@
         }
 
         /* ============================================
-           ABOUT SECTION
+           BENEFITS SECTION
         ============================================ */
-        .about {
+        .benefits {
             padding: 5rem 0;
             background: var(--white);
         }
 
-        .about-content {
+        .benefits-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
         }
 
-        .about-image {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-hover);
+        .benefit-card {
+            text-align: center;
+            padding: 2rem;
         }
 
-        .about-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .benefit-icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
         }
 
-        .about-text h2 {
-            font-size: 2.5rem;
+        .benefit-card h3 {
             color: var(--primary-color);
             margin-bottom: 1rem;
+            font-size: 1.4rem;
         }
 
-        .about-text p {
+        .benefit-card p {
             color: var(--text-light);
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
             line-height: 1.8;
         }
 
-        .about-features {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
+        /* ============================================
+           TESTIMONIALS SECTION
+        ============================================ */
+        .testimonials {
+            padding: 5rem 0;
+            background: var(--bg-light);
         }
 
-        .about-feature {
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stars {
+            color: #ffc107;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-text {
+            color: var(--text-light);
+            font-style: italic;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-author {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 1rem;
         }
 
-        .about-feature i {
-            color: var(--accent-color);
-            font-size: 1.5rem;
-            margin-top: 0.2rem;
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
         }
 
-        .about-feature h4 {
+        .author-info h4 {
             color: var(--primary-color);
-            margin-bottom: 0.3rem;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
         }
 
-        .about-feature p {
-            font-size: 0.95rem;
-            margin: 0;
+        .author-info p {
+            color: var(--text-light);
+            font-size: 0.85rem;
         }
 
         /* ============================================
@@ -499,7 +687,7 @@
             .nav-menu {
                 position: fixed;
                 left: -100%;
-                top: 45px;
+                top: 70px;
                 flex-direction: column;
                 background: var(--white);
                 width: 100%;
@@ -530,20 +718,25 @@
                 padding: 1.5rem;
             }
 
+            .cta-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-white, .btn-outline {
+                width: 100%;
+            }
+
             .properties-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-
-            .about-features {
                 grid-template-columns: 1fr;
             }
 
             .section-header h2 {
                 font-size: 2rem;
+            }
+
+            .cta-content h2 {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -556,9 +749,9 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#comprar">Comprar</a></li>
                 <li><a href="#alugar">Alugar</a></li>
-                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#como-funciona">Como Funciona</a></li>
                 <li><a href="#contato">Contato</a></li>
-                <li><a href="#anunciar" class="btn-primary">Anuncie seu Imóvel</a></li>
+                <li><a href="#anunciar" class="btn-success">Anunciar Grátis</a></li>
             </ul>
             <div class="mobile-toggle" id="mobileToggle">
                 <i class="fas fa-bars"></i>
@@ -569,8 +762,9 @@
     <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Encontre o Lar dos Seus Sonhos</h1>
-            <p>Milhares de imóveis selecionados com qualidade e confiança</p>
+            <h1>O Maior Portal Imobiliário do Brasil</h1>
+            <p>Compre, venda ou alugue seu imóvel de forma simples e segura</p>
+            <p class="hero-subtitle">✓ Anúncios gratuitos ✓ Milhares de imóveis ✓ Negociação direta</p>
             
             <div class="search-box">
                 <div class="search-field">
@@ -584,15 +778,72 @@
                         <option>Apartamento</option>
                         <option>Cobertura</option>
                         <option>Terreno</option>
+                        <option>Comercial</option>
+                        <option>Rural</option>
                     </select>
                 </div>
                 <div class="search-field">
-                    <label for="price">Preço Máximo</label>
-                    <input type="text" id="price" placeholder="R$ 500.000">
+                    <label for="transaction">Tipo de Negócio</label>
+                    <select id="transaction">
+                        <option>Comprar</option>
+                        <option>Alugar</option>
+                    </select>
                 </div>
                 <button class="btn-search">
                     <i class="fas fa-search"></i> Buscar
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works" id="como-funciona">
+        <div class="container">
+            <div class="section-header">
+                <h2>Como Funciona</h2>
+                <p>Anuncie seu imóvel em 3 passos simples</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>1. Cadastre-se Grátis</h3>
+                    <p>Crie sua conta em menos de 2 minutos. É totalmente gratuito e sem compromisso.</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>2. Anuncie seu Imóvel</h3>
+                    <p>Adicione fotos, descrição e detalhes do seu imóvel. Quanto mais completo, melhor!</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>3. Receba Propostas</h3>
+                    <p>Interessados entram em contato direto com você. Negocie e feche o melhor negócio!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section" id="anunciar">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Pronto para Anunciar seu Imóvel?</h2>
+                <p>Milhares de pessoas procurando por imóveis como o seu todos os dias</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn-white">
+                        <i class="fas fa-plus-circle"></i> Anunciar Gratuitamente
+                    </a>
+                    <a href="#" class="btn-outline">Ver Planos Premium</a>
+                </div>
             </div>
         </div>
     </section>
@@ -602,13 +853,14 @@
         <div class="container">
             <div class="section-header">
                 <h2>Imóveis em Destaque</h2>
-                <p>Selecionamos os melhores imóveis para você</p>
+                <p>Confira os anúncios mais recentes da plataforma</p>
             </div>
 
             <div class="properties-grid">
                 <div class="property-card">
                     <div class="property-image">
                         <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Casa Moderna">
+                        <div class="property-type">Venda</div>
                         <div class="property-badge">R$ 850.000</div>
                     </div>
                     <div class="property-info">
@@ -637,10 +889,11 @@
                 <div class="property-card">
                     <div class="property-image">
                         <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" alt="Apartamento Luxo">
-                        <div class="property-badge">R$ 1.200.000</div>
+                        <div class="property-type">Aluguel</div>
+                        <div class="property-badge">R$ 4.500/mês</div>
                     </div>
                     <div class="property-info">
-                        <h3>Cobertura Duplex de Luxo</h3>
+                        <h3>Apartamento Moderno</h3>
                         <div class="property-location">
                             <i class="fas fa-map-marker-alt"></i>
                             <span>Jardins, São Paulo</span>
@@ -652,11 +905,11 @@
                             </div>
                             <div class="feature">
                                 <i class="fas fa-bath"></i>
-                                <span>4 Banheiros</span>
+                                <span>3 Banheiros</span>
                             </div>
                             <div class="feature">
                                 <i class="fas fa-ruler-combined"></i>
-                                <span>320 m²</span>
+                                <span>180 m²</span>
                             </div>
                         </div>
                     </div>
@@ -665,6 +918,7 @@
                 <div class="property-card">
                     <div class="property-image">
                         <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80" alt="Casa Praia">
+                        <div class="property-type">Venda</div>
                         <div class="property-badge">R$ 980.000</div>
                     </div>
                     <div class="property-info">
@@ -693,46 +947,125 @@
         </div>
     </section>
 
-    <!-- ABOUT SECTION -->
-    <section class="about" id="sobre">
+    <!-- BENEFITS -->
+    <section class="benefits">
         <div class="container">
-            <div class="about-content">
-                <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80" alt="Corretor Profissional">
+            <div class="section-header">
+                <h2>Por Que Anunciar Conosco?</h2>
+                <p>Benefícios exclusivos para quem anuncia na nossa plataforma</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3>100% Gratuito</h3>
+                    <p>Anuncie seus imóveis sem pagar nada. Zero taxas de cadastro ou mensalidade.</p>
                 </div>
-                <div class="about-text">
-                    <h2>Por Que Confiar em Nós?</h2>
-                    <p>Com mais de 15 anos de experiência no mercado imobiliário, o Seu Novo Imóvel se destaca pela excelência no atendimento e pela curadoria rigorosa de propriedades premium.</p>
-                    <p>Nossa equipe de corretores especializados está pronta para transformar seu sonho em realidade, oferecendo suporte completo em todas as etapas da negociação.</p>
-                    
-                    <div class="about-features">
-                        <div class="about-feature">
-                            <i class="fas fa-shield-alt"></i>
-                            <div>
-                                <h4>Segurança Total</h4>
-                                <p>Todas as propriedades verificadas e regularizadas</p>
-                            </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Milhares de Visitantes</h3>
+                    <p>Seu anúncio será visto por milhares de pessoas interessadas todos os dias.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>App Mobile</h3>
+                    <p>Gerencie seus anúncios de qualquer lugar através do nosso aplicativo.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Estatísticas Detalhadas</h3>
+                    <p>Acompanhe visualizações, contatos e performance dos seus anúncios.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Segurança Total</h3>
+                    <p>Seus dados e informações dos imóveis protegidos com criptografia.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Suporte Dedicado</h3>
+                    <p>Equipe pronta para ajudar você em qualquer dúvida ou problema.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>O Que Dizem Nossos Usuários</h2>
+                <p>Histórias de sucesso de quem já anunciou conosco</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Consegui vender meu apartamento em apenas 2 semanas! A plataforma é muito fácil de usar e recebi muitos contatos de interessados."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MC</div>
+                        <div class="author-info">
+                            <h4>Maria Clara Silva</h4>
+                            <p>Vendeu Apartamento em SP</p>
                         </div>
-                        <div class="about-feature">
-                            <i class="fas fa-headset"></i>
-                            <div>
-                                <h4>Suporte 24/7</h4>
-                                <p>Equipe disponível para tirar suas dúvidas</p>
-                            </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Excelente portal! Aluguei minha casa de praia rapidamente e sem complicações. Recomendo para todos que querem anunciar."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">RS</div>
+                        <div class="author-info">
+                            <h4>Roberto Santos</h4>
+                            <p>Alugou Casa no Guarujá</p>
                         </div>
-                        <div class="about-feature">
-                            <i class="fas fa-chart-line"></i>
-                            <div>
-                                <h4>Melhor Custo-Benefício</h4>
-                                <p>Negociação justa e transparente</p>
-                            </div>
-                        </div>
-                        <div class="about-feature">
-                            <i class="fas fa-award"></i>
-                            <div>
-                                <h4>Premiados</h4>
-                                <p>Melhor imobiliária 2023 e 2024</p>
-                            </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Encontrei o imóvel perfeito para minha família através deste site. O processo foi transparente e o vendedor foi muito atencioso!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AF</div>
+                        <div class="author-info">
+                            <h4>Ana Ferreira</h4>
+                            <p>Comprou Casa em Condomínio</p>
                         </div>
                     </div>
                 </div>
@@ -746,7 +1079,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Seu Novo<span style="color: #2c5f7c;">Imóvel</span></h3>
-                    <p>Realizando sonhos e construindo futuros desde 2009. Encontre o imóvel perfeito com quem entende do assunto.</p>
+                    <p>Uma plataforma Evotiva. O maior portal imobiliário do Brasil, conectando pessoas aos seus imóveis dos sonhos.</p>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
@@ -756,12 +1089,23 @@
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Links Rápidos</h3>
+                    <h3>Para Você</h3>
                     <ul class="footer-links">
                         <li><a href="#comprar">Comprar Imóvel</a></li>
                         <li><a href="#alugar">Alugar Imóvel</a></li>
-                        <li><a href="#anunciar">Anuncie Conosco</a></li>
-                        <li><a href="#sobre">Sobre Nós</a></li>
+                        <li><a href="#anunciar">Anunciar Grátis</a></li>
+                        <li><a href="#como-funciona">Como Funciona</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Institucional</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Sobre Nós</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Trabalhe Conosco</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
                     </ul>
                 </div>
                 
@@ -771,6 +1115,7 @@
                         <li><i class="fas fa-phone"></i> (11) 3456-7890</li>
                         <li><i class="fas fa-envelope"></i> contato@seunovoimovel.com.br</li>
                         <li><i class="fas fa-map-marker-alt"></i> Av. Paulista, 1000 - São Paulo/SP</li>
+                        <li><i class="fas fa-clock"></i> Seg-Sex: 9h às 18h</li>
                     </ul>
                 </div>
             </div>
@@ -793,7 +1138,6 @@
             icon.classList.toggle('fa-times');
         });
 
-        // Fecha o menu ao clicar em um link
         document.querySelectorAll('.nav-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
