@@ -1,0 +1,464 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu Novo Imóvel - Portal Imobiliário</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header>
+    <!-- HEADER -->
+        <nav class="container">
+            <div class="logo">Seu Novo<span>Imóvel</span></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#comprar">Comprar</a></li>
+                <li><a href="#alugar">Alugar</a></li>
+                <li><a href="#como-funciona">Como Funciona</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="#anunciar" class="btn-success">Anunciar Grátis</a></li>
+            </ul>
+            <div class="mobile-toggle" id="mobileToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>O Maior Portal Imobiliário do Brasil</h1>
+            <p>Compre, venda ou alugue seu imóvel de forma simples e segura</p>
+            <p class="hero-subtitle">✓ Anúncios gratuitos ✓ Milhares de imóveis ✓ Negociação direta</p>
+            
+<form action="{% url 'home' %}" method="GET" class="search-box">
+    
+    <div class="search-field">
+        <label for="location">Localização</label>
+        <input type="text" name="cidade" id="location" placeholder="Cidade ou Bairro" value="{{ request.GET.cidade }}">
+    </div>
+    
+    <div class="search-field">
+        <label for="type">Tipo de Imóvel</label>
+        <select name="tipo" id="type">
+            <option value="">Todos</option>
+            <option value="CASA" {% if request.GET.tipo == 'CASA' %}selected{% endif %}>Casa</option>
+            <option value="APARTAMENTO" {% if request.GET.tipo == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
+            <option value="COBERTURA" {% if request.GET.tipo == 'COBERTURA' %}selected{% endif %}>Cobertura</option>
+            <option value="TERRENO" {% if request.GET.tipo == 'TERRENO' %}selected{% endif %}>Terreno</option>
+            <option value="COMERCIAL" {% if request.GET.tipo == 'COMERCIAL' %}selected{% endif %}>Comercial</option>
+            <option value="RURAL" {% if request.GET.tipo == 'RURAL' %}selected{% endif %}>Rural</option>
+        </select>
+    </div>
+    
+    <div class="search-field">
+        <label for="transaction">Tipo de Negócio</label>
+        <select name="finalidade" id="transaction">
+            <option value="">Todos</option>
+            <option value="VENDA" {% if request.GET.finalidade == 'VENDA' %}selected{% endif %}>Comprar</option>
+            <option value="ALUGUEL" {% if request.GET.finalidade == 'ALUGUEL' %}selected{% endif %}>Alugar</option>
+        </select>
+    </div>
+    
+    <div class="search-field">
+        <label for="order">Ordenar por</label>
+        <select name="order" id="order">
+            <option value="-id" {% if request.GET.order == '-id' %}selected{% endif %}>Mais Recentes</option>
+            <option value="preco" {% if request.GET.order == 'preco' %}selected{% endif %}>Menor Preço</option>
+            <option value="-preco" {% if request.GET.order == '-preco' %}selected{% endif %}>Maior Preço</option>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn-search">
+        <i class="fas fa-search"></i> Buscar
+    </button>
+</form>
+    
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works" id="como-funciona">
+        <div class="container">
+            <div class="section-header">
+                <h2>Como Funciona</h2>
+                <p>Anuncie seu imóvel em 3 passos simples</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>1. Cadastre-se Grátis</h3>
+                    <p>Crie sua conta em menos de 2 minutos. É totalmente gratuito e sem compromisso.</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>2. Anuncie seu Imóvel</h3>
+                    <p>Adicione fotos, descrição e detalhes do seu imóvel. Quanto mais completo, melhor!</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>3. Receba Propostas</h3>
+                    <p>Interessados entram em contato direto com você. Negocie e feche o melhor negócio!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section" id="anunciar">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Pronto para Anunciar seu Imóvel?</h2>
+                <p>Milhares de pessoas procurando por imóveis como o seu todos os dias</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn-white">
+                        <i class="fas fa-plus-circle"></i> Anunciar Gratuitamente
+                    </a>
+                    <a href="#" class="btn-outline">Ver Planos Premium</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED PROPERTIES -->
+    <section class="featured" id="comprar">
+        <div class="container">
+            <div class="section-header">
+                <h2>Imóveis em Destaque</h2>
+                <p>Confira os anúncios mais recentes da plataforma</p>
+            </div>
+
+    <div class="properties-grid">
+    {% for imovel in page_obj %}
+    <div class="property-card">
+        <div class="property-image">
+            {% if imovel.imagens.exists %}
+                <img src="{{ imovel.imagens.first.imagem.url }}" alt="{{ imovel.titulo }}">
+                <button class="btn-favorite" onclick="toggleFavorite('{{ imovel.id }}')" data-id="{{ imovel.id }}">
+                    <i class="far fa-heart"></i>
+                </button>
+            {% else %}
+                <img src="https://via.placeholder.com/800x600?text=Sem+Foto" alt="Sem Foto">
+                <button class="btn-favorite" onclick="toggleFavorite('{{ imovel.id }}')" data-id="{{ imovel.id }}">
+                    <i class="far fa-heart"></i>
+                </button>
+            {% endif %}
+            
+            <div class="property-type">{{ imovel.get_tipo_transacao_display }}</div>
+            <div class="property-badge">R$ {{ imovel.preco }}</div>
+        </div>
+        <div class="property-info">
+            <h3>{{ imovel.titulo }}</h3>
+            <div class="property-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ imovel.bairro }}, {{ imovel.cidade }}</span>
+            </div>
+            <div class="property-features">
+                <div class="feature">
+                    <i class="fas fa-bed"></i>
+                    <span>{{ imovel.quartos }} Quartos</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bath"></i>
+                    <span>{{ imovel.banheiros }} Banheiros</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-ruler-combined"></i>
+                    <span>{{ imovel.area_total }} m²</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Nenhum imóvel encontrado no momento.</p>
+    {% endfor %}
+</div>
+
+<div class="pagination" style="text-align: center; margin-top: 2rem; display: flex; justify-content: center; gap: 10px;">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&cidade={{ request.GET.cidade }}&tipo={{ request.GET.tipo }}&finalidade={{ request.GET.finalidade }}&order={{ request.GET.order }}" class="btn-primary" style="padding: 0.5rem 1rem;">
+            &laquo; Anterior
+        </a>
+    {% endif %}
+
+    <span class="current" style="padding: 0.5rem 1rem; font-weight: bold;">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&cidade={{ request.GET.cidade }}&tipo={{ request.GET.tipo }}&finalidade={{ request.GET.finalidade }}&order={{ request.GET.order }}" class="btn-primary" style="padding: 0.5rem 1rem;">
+            Próxima &raquo;
+        </a>
+    {% endif %}
+</div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <h2>Por Que Anunciar Conosco?</h2>
+                <p>Benefícios exclusivos para quem anuncia na nossa plataforma</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3>100% Gratuito</h3>
+                    <p>Anuncie seus imóveis sem pagar nada. Zero taxas de cadastro ou mensalidade.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Milhares de Visitantes</h3>
+                    <p>Seu anúncio será visto por milhares de pessoas interessadas todos os dias.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>App Mobile</h3>
+                    <p>Gerencie seus anúncios de qualquer lugar através do nosso aplicativo.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Estatísticas Detalhadas</h3>
+                    <p>Acompanhe visualizações, contatos e performance dos seus anúncios.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Segurança Total</h3>
+                    <p>Seus dados e informações dos imóveis protegidos com criptografia.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Suporte Dedicado</h3>
+                    <p>Equipe pronta para ajudar você em qualquer dúvida ou problema.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>O Que Dizem Nossos Usuários</h2>
+                <p>Histórias de sucesso de quem já anunciou conosco</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Consegui vender meu apartamento em apenas 2 semanas! A plataforma é muito fácil de usar e recebi muitos contatos de interessados."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MC</div>
+                        <div class="author-info">
+                            <h4>Maria Clara Silva</h4>
+                            <p>Vendeu Apartamento em SP</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Excelente portal! Aluguei minha casa de praia rapidamente e sem complicações. Recomendo para todos que querem anunciar."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">RS</div>
+                        <div class="author-info">
+                            <h4>Roberto Santos</h4>
+                            <p>Alugou Casa no Guarujá</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Encontrei o imóvel perfeito para minha família através deste site. O processo foi transparente e o vendedor foi muito atencioso!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AF</div>
+                        <div class="author-info">
+                            <h4>Ana Ferreira</h4>
+                            <p>Comprou Casa em Condomínio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contato">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Seu Novo<span style="color: #2c5f7c;">Imóvel</span></h3>
+                    <p>Uma plataforma Evotiva. O maior portal imobiliário do Brasil, conectando pessoas aos seus imóveis dos sonhos.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Para Você</h3>
+                    <ul class="footer-links">
+                        <li><a href="#comprar">Comprar Imóvel</a></li>
+                        <li><a href="#alugar">Alugar Imóvel</a></li>
+                        <li><a href="#anunciar">Anunciar Grátis</a></li>
+                        <li><a href="#como-funciona">Como Funciona</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Institucional</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Sobre Nós</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Trabalhe Conosco</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-phone"></i> (11) 3456-7890</li>
+                        <li><i class="fas fa-envelope"></i> contato@seunovoimovel.com.br</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Av. Paulista, 1000 - São Paulo/SP</li>
+                        <li><i class="fas fa-clock"></i> Seg-Sex: 9h às 18h</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Seu Novo Imóvel. Todos os direitos reservados. | CRECI 12345-J</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT MOBILE MENU -->
+    <script>
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        mobileToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = mobileToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                const icon = mobileToggle.querySelector('i');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+            });
+        });
+
+        // --- LÓGICA DE FAVORITOS ---
+
+    // 1. Ao carregar a página, verifica quais imóveis já foram favoritados
+    document.addEventListener('DOMContentLoaded', function() {
+        const favoritos = JSON.parse(localStorage.getItem('imoveisFavoritos')) || [];
+        
+        // Para cada botão de coração na tela...
+        document.querySelectorAll('.btn-favorite').forEach(btn => {
+            const id = btn.getAttribute('data-id');
+            // Se o ID estiver na lista salva, pinta de vermelho
+            if (favoritos.includes(id)) {
+                btn.classList.add('active');
+                btn.querySelector('i').classList.remove('far'); // Remove contorno
+                btn.querySelector('i').classList.add('fas');    // Adiciona preenchido
+            }
+        });
+    });
+
+    // 2. Função chamada ao clicar no coração
+    function toggleFavorite(id) {
+        // Previne que o clique abra o link do imóvel (se houver link no card)
+        event.preventDefault(); 
+        
+        let favoritos = JSON.parse(localStorage.getItem('imoveisFavoritos')) || [];
+        const btn = document.querySelector(`.btn-favorite[data-id="${id}"]`);
+        const icon = btn.querySelector('i');
+
+        if (favoritos.includes(id)) {
+            // Se já tem, REMOVE
+            favoritos = favoritos.filter(favId => favId !== id);
+            btn.classList.remove('active');
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+        } else {
+            // Se não tem, ADICIONA
+            favoritos.push(id);
+            btn.classList.add('active');
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+        }
+
+        // Salva a nova lista no navegador
+        localStorage.setItem('imoveisFavoritos', JSON.stringify(favoritos));
+    }
+    </script>
+</body>
+</html>
