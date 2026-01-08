@@ -766,3 +766,64 @@ footer {
         font-size: 1.8rem;
     }
 }
+
+/* static/css/style.css */
+
+/*Wrapper para alinhar os botões lado a lado*/
+.search-actions {
+    display: flex;
+    gap: 15px; /* Espaço entre os botões */
+    align-items: stretch; /* Garante que tenham a mesma altura */
+    margin-top: 1rem; /* Um respiro em cima, se precisar */
+}
+
+/* Estilo Base Compartilhado (Para ficarem Gêmeos) */
+.btn-reset, 
+.btn-search {
+    flex: 1; /* O PULO DO GATO: Faz os dois terem a mesma largura exata */
+    display: flex; /* Flexbox interno para alinhar Ícone + Texto */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 10px; /* Espaço entre o ícone e a palavra */
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none; /* Remove borda padrão do button */
+    height: 50px; /* Força uma altura fixa para garantir simetria com inputs */
+    text-decoration: none; /* Remove sublinhado do link */
+}
+
+/* Cores Específicas: Limpar (Vermelho) */
+.btn-reset {
+    background: #c0392b; 
+    color: var(--white);
+}
+
+.btn-reset:hover {
+    background: #a93226;
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Cores Específicas: Buscar (Azul - usando suas variáveis) */
+.btn-search {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-search:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Ajuste Responsivo: No celular fica um em cima do outro */
+@media (max-width: 480px) {
+    .search-actions {
+        flex-direction: column;
+    }
+}

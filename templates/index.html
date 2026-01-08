@@ -1,4 +1,5 @@
-{% load static %}
+{% load static %}   
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -78,11 +79,18 @@
         </select>
     </div>
     
+    <div class="search-actions">
+        
     <button type="submit" class="btn-search">
         <i class="fas fa-search"></i> Buscar
     </button>
-</form>
     
+    <a href="{% url 'home' %}" class="btn-search">
+        <i class="fas fa-trash-alt"></i> Limpar
+    </a>
+
+
+    </div>
         </div>
     </section>
 
@@ -163,7 +171,7 @@
             {% endif %}
             
             <div class="property-type">{{ imovel.get_tipo_transacao_display }}</div>
-            <div class="property-badge">R$ {{ imovel.preco }}</div>
+            <div class="property-badge">R$ {{ imovel.preco|intcomma }}</div>
         </div>
         <div class="property-info">
             <h3>{{ imovel.titulo }}</h3>
