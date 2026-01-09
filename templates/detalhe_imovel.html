@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -26,9 +28,9 @@
     <main class="container property-detail-page" style="margin-top: 100px; margin-bottom: 50px;">
         
         <div style="margin-bottom: 1rem;">
-        <a href="{% url 'home' %}" class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color); padding: 0.5rem 1rem;">
-            <i class="fas fa-arrow-left"></i> Voltar para a Busca
-        </a>
+            <a href="{% url 'home' %}" class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color); padding: 0.5rem 1rem;">
+                <i class="fas fa-arrow-left"></i> Voltar para a Busca
+            </a>
         </div>
 
         <div class="gallery-grid">
@@ -59,8 +61,8 @@
                 <div class="features-bar">
                     <div class="feature-item"><i class="fas fa-bed"></i> {{ imovel.quartos }} Quartos</div>
                     {% if imovel.suites > 0 %}
-                    <div class="feature-item"><i class="fas fa-door-closed"></i> {{ imovel.suites }} Suítes</div>
-                     {% endif %}         
+                        <div class="feature-item"><i class="fas fa-door-closed"></i> {{ imovel.suites }} Suítes</div>
+                    {% endif %}
                     <div class="feature-item"><i class="fas fa-bath"></i> {{ imovel.banheiros }} Banheiros</div>
                     <div class="feature-item"><i class="fas fa-car"></i> {{ imovel.vagas_garagem }} Vagas</div>
                     <div class="feature-item"><i class="fas fa-ruler-combined"></i> {{ imovel.area_total }} m²</div>
@@ -70,6 +72,11 @@
                     <h3>Sobre o Imóvel</h3>
                     <p>{{ imovel.descricao|linebreaks }}</p>
                 </div>
+
+                <div class="map-box" style="margin-top: 2rem;">
+                    <h3>Localização Aproximada</h3>
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 12px; z-index: 1;"></div>
+                </div>
             </div>
 
             <aside class="property-sidebar">
@@ -77,6 +84,20 @@
                     <span class="label">Valor de {{ imovel.get_tipo_transacao_display }}</span>
                     <div class="price">R$ {{ imovel.preco|intcomma }}</div>
                     
+                    <div style="margin-bottom: 1.5rem; color: #666; font-size: 0.95rem;">
+                        {% if imovel.valor_condominio %}
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px 0;">
+                                <span>Condomínio:</span> <strong>R$ {{ imovel.valor_condominio|intcomma }}</strong>
+                            </div>
+                        {% endif %}
+                        
+                        {% if imovel.tipo_transacao == 'ALUGUEL' and imovel.iptu %}
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px 0;">
+                                <span>IPTU:</span> <strong>R$ {{ imovel.iptu|intcomma }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+
                     <div class="advertiser-info">
                         <div class="avatar-placeholder">{{ imovel.anunciante.user.first_name|first }}</div>
                         <div>
@@ -101,6 +122,8 @@
                     <div class="property-image">
                         {% if rel.imagens.first %}
                             <img src="{{ rel.imagens.first.imagem.url }}">
+                        {% else %}
+                             <img src="https://via.placeholder.com/800x600?text=Ver+Detalhes">
                         {% endif %}
                         <div class="property-badge">R$ {{ rel.preco|intcomma }}</div>
                     </div>
@@ -120,11 +143,78 @@
         <img id="lightbox-img" src="">
     </div>
 
-    <script>
-        function openLightbox(url) {
-            document.getElementById('lightbox-img').src = url;
-            document.getElementById('lightbox').style.display = 'flex';
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    // --- 1. LIGHTBOX (Galeria) ---
+    function openLightbox(url) {
+        const lightbox = document.getElementById('lightbox');
+        const img = document.getElementById('lightbox-img');
+        if(lightbox && img) {
+            img.src = url;
+            lightbox.style.display = 'flex';
         }
-    </script>
+    }
+
+    // --- 2. MAPA INTELIGENTE (Auto-Geocoding) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elemento do mapa
+        const mapContainer = document.getElementById('map');
+        
+        // Se não tiver container de mapa na tela, não faz nada (evita erros)
+        if (!mapContainer) return;
+
+        // Dados vindos do Django
+        const dbLat = "{{ imovel.latitude|default_if_none:'' }}".replace(',', '.');
+        const dbLng = "{{ imovel.longitude|default_if_none:'' }}".replace(',', '.');
+        const enderecoBusca = "{{ imovel.bairro }}, {{ imovel.cidade }} - {{ imovel.estado }}"; // Busca pelo Bairro (Mais seguro/aprox)
+
+        // Função para desenhar o mapa
+        function initMap(lat, lng, isExact) {
+            var map = L.map('map').setView([lat, lng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Se for exato (veio do banco), raio menor. Se for busca automática, raio maior (bairro).
+            var radius = isExact ? 200 : 800; 
+
+            L.circle([lat, lng], {
+                color: '#1a3a52',       
+                fillColor: '#2c5f7c',   
+                fillOpacity: 0.4,
+                radius: radius             
+            }).addTo(map);
+        }
+
+        // --- LÓGICA DE DECISÃO ---
+        if (dbLat && dbLng && !isNaN(parseFloat(dbLat))) {
+            // CASO 1: Temos coordenadas no banco? Usa elas!
+            initMap(parseFloat(dbLat), parseFloat(dbLng), true);
+        } else {
+            // CASO 2: Não tem coordenadas? Busca o endereço automaticamente!
+            console.log("Buscando coordenadas para: " + enderecoBusca);
+            
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoBusca)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        initMap(lat, lon, false); // false = localização aproximada
+                    } else {
+                        // Se não achar nada, esconde a div do mapa para não ficar um quadrado cinza
+                        mapContainer.parentElement.style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro ao buscar mapa:", err);
+                    mapContainer.parentElement.style.display = 'none';
+                });
+        }
+    });
+</script>
 </body>
 </html>

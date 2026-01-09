@@ -47,7 +47,9 @@ class Imovel(TimeStampedModel):
     area_total = models.PositiveIntegerField(help_text="Em m²") 
     valor_condominio = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True, verbose_name="Valor do Condomínio")
     iptu = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True, verbose_name="IPTU (Mensal)")
-    
+    latitude = models.CharField(max_length=50, blank=True, null=True, help_text="Ex: -23.550520")
+    longitude = models.CharField(max_length=50, blank=True, null=True, help_text="Ex: -46.633308")
+
     # Localização
     cep = models.CharField(max_length=9)
     endereco = models.CharField(max_length=255, blank=True)
