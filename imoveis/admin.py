@@ -10,7 +10,7 @@ class ImovelImagemInline(admin.TabularInline):
 @admin.register(Imovel)
 class ImovelAdmin(admin.ModelAdmin):
     # O que aparece na lista
-    list_display = ('titulo', 'bairro', 'preco', 'tipo_transacao', 'status', 'destaque')
+    list_display = ('titulo', 'bairro', 'preco','quartos','suites', 'tipo_transacao', 'status', 'destaque')
     
     # Filtros laterais (baseado no que vimos no HTML)
     list_filter = ('status', 'tipo_imovel', 'tipo_transacao', 'cidade')

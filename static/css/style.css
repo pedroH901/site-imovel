@@ -827,3 +827,98 @@ footer {
         flex-direction: column;
     }
 }
+
+/* --- PÁGINA DE DETALHES --- */
+
+/* Grid Mosaico (Estilo Instagram/Airbnb) */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 10px;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.gallery-item { cursor: pointer; position: relative; overflow: hidden; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.gallery-item:hover img { transform: scale(1.05); }
+
+/* A primeira foto ocupa 2 linhas (Principal) */
+.item-1 { grid-column: 1 / 2; grid-row: 1 / 3; }
+
+/* Layout Conteúdo + Sidebar */
+.property-content-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+/* Sidebar Flutuante */
+.price-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid #eee;
+    position: sticky;
+    top: 100px; /* Fixa ao rolar */
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0.5rem 0 1.5rem;
+}
+
+.btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #25D366;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    transition: 0.3s;
+}
+
+.btn-whatsapp:hover { background: #128C7E; transform: translateY(-2px); }
+
+/* Features Bar (Quartos, Banheiros...) */
+.features-bar {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    margin: 1.5rem 0;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Lightbox (Tela Cheia) */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+.lightbox img { max-width: 90%; max-height: 90vh; border-radius: 4px; }
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .gallery-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .item-1 { grid-column: auto; grid-row: auto; height: 300px; }
+    .property-content-wrapper { grid-template-columns: 1fr; }
+    .price-card { position: static; }
+}

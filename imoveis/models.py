@@ -40,10 +40,13 @@ class Imovel(TimeStampedModel):
     tipo_transacao = models.CharField(max_length=20, choices=TRANSACAO_CHOICES)
     preco = models.DecimalField(max_digits=12, decimal_places=2)
     
-    quartos = models.PositiveIntegerField(default=0) #
-    banheiros = models.PositiveIntegerField(default=0) #
+    quartos = models.PositiveIntegerField(default=0)
+    suites = models.PositiveIntegerField(default=0)
+    banheiros = models.PositiveIntegerField(default=0) 
     vagas_garagem = models.PositiveIntegerField(default=0)
-    area_total = models.PositiveIntegerField(help_text="Em m²") #
+    area_total = models.PositiveIntegerField(help_text="Em m²") 
+    valor_condominio = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True, verbose_name="Valor do Condomínio")
+    iptu = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True, verbose_name="IPTU (Mensal)")
     
     # Localização
     cep = models.CharField(max_length=9)

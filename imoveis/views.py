@@ -1,5 +1,5 @@
 # imoveis/views.py
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Imovel
@@ -44,8 +44,22 @@ def index(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    context = {
-        'page_obj': page_obj,
-    }
+    context = {'page_obj': page_obj}
     
     return render(request, 'index.html', context)
+
+def detalhe_imovel(request, slug):
+    imovel = get_object_or_404(Imovel, slug=slug)
+    
+    # Sugestão de "Veja Também" (Mesmo bairro, excluindo o atual)
+    relacionados = Imovel.objects.filter(
+        status='ATIVO', 
+        bairro=imovel.bairro
+    ).exclude(id=imovel.id)[:3]
+    
+    context = {
+        'imovel': imovel,
+        'relacionados': relacionados
+    }
+    return render(request, 'detalhe_imovel.html', context)
+    

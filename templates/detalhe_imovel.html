@@ -1,0 +1,130 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ imovel.titulo }} - Seu Novo Imóvel</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="{% url 'home' %}" class="logo">Seu Novo<span>Imóvel</span></a>
+            <ul class="nav-menu">
+                <li><a href="{% url 'home' %}">Voltar para a Busca</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container property-detail-page" style="margin-top: 100px; margin-bottom: 50px;">
+        
+        <div style="margin-bottom: 1rem;">
+        <a href="{% url 'home' %}" class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color); padding: 0.5rem 1rem;">
+            <i class="fas fa-arrow-left"></i> Voltar para a Busca
+        </a>
+        </div>
+
+        <div class="gallery-grid">
+            {% if imovel.imagens.all %}
+                {% for img in imovel.imagens.all|slice:":5" %}
+                    <div class="gallery-item item-{{ forloop.counter }}">
+                        <img src="{{ img.imagem.url }}" alt="Foto {{ forloop.counter }}" onclick="openLightbox('{{ img.imagem.url }}')">
+                    </div>
+                {% endfor %}
+                {% if imovel.imagens.count > 5 %}
+                    <button class="btn-view-all">Ver todas as {{ imovel.imagens.count }} fotos</button>
+                {% endif %}
+            {% else %}
+                <div class="gallery-item item-1">
+                    <img src="https://via.placeholder.com/1200x600?text=Sem+Foto" alt="Sem Foto">
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="property-content-wrapper">
+            <div class="property-main">
+                <div class="property-header">
+                    <span class="tag-tipo">{{ imovel.get_tipo_imovel_display }}</span>
+                    <h1>{{ imovel.titulo }}</h1>
+                    <p class="location"><i class="fas fa-map-marker-alt"></i> {{ imovel.endereco }}, {{ imovel.bairro }} - {{ imovel.cidade }}/{{ imovel.estado }}</p>
+                </div>
+
+                <div class="features-bar">
+                    <div class="feature-item"><i class="fas fa-bed"></i> {{ imovel.quartos }} Quartos</div>
+                    {% if imovel.suites > 0 %}
+                    <div class="feature-item"><i class="fas fa-door-closed"></i> {{ imovel.suites }} Suítes</div>
+                     {% endif %}         
+                    <div class="feature-item"><i class="fas fa-bath"></i> {{ imovel.banheiros }} Banheiros</div>
+                    <div class="feature-item"><i class="fas fa-car"></i> {{ imovel.vagas_garagem }} Vagas</div>
+                    <div class="feature-item"><i class="fas fa-ruler-combined"></i> {{ imovel.area_total }} m²</div>
+                </div>
+
+                <div class="description-box">
+                    <h3>Sobre o Imóvel</h3>
+                    <p>{{ imovel.descricao|linebreaks }}</p>
+                </div>
+            </div>
+
+            <aside class="property-sidebar">
+                <div class="price-card">
+                    <span class="label">Valor de {{ imovel.get_tipo_transacao_display }}</span>
+                    <div class="price">R$ {{ imovel.preco|intcomma }}</div>
+                    
+                    <div class="advertiser-info">
+                        <div class="avatar-placeholder">{{ imovel.anunciante.user.first_name|first }}</div>
+                        <div>
+                            <h4>{{ imovel.anunciante.user.get_full_name }}</h4>
+                            <p>Anunciante Verificado</p>
+                        </div>
+                    </div>
+
+                    <a href="https://wa.me/55{{ imovel.anunciante.telefone|cut:' '|cut:'-'|cut:'('|cut:')' }}?text=Olá, vi o imóvel '{{ imovel.titulo }}' no portal e gostaria de mais informações." target="_blank" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Chamar no WhatsApp
+                    </a>
+                </div>
+            </aside>
+        </div>
+        
+        {% if relacionados %}
+        <section class="related-properties">
+            <h3>Veja Também em {{ imovel.bairro }}</h3>
+            <div class="properties-grid">
+                {% for rel in relacionados %}
+                <a href="{% url 'detalhe_imovel' rel.slug %}" class="property-card">
+                    <div class="property-image">
+                        {% if rel.imagens.first %}
+                            <img src="{{ rel.imagens.first.imagem.url }}">
+                        {% endif %}
+                        <div class="property-badge">R$ {{ rel.preco|intcomma }}</div>
+                    </div>
+                    <div class="property-info">
+                        <h4>{{ rel.titulo }}</h4>
+                        <p>{{ rel.bairro }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+    </main>
+    
+    <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
+        <img id="lightbox-img" src="">
+    </div>
+
+    <script>
+        function openLightbox(url) {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
