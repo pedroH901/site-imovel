@@ -1,31 +1,14 @@
+{% extends 'base.html' %}
 {% load static humanize %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ imovel.titulo }} - Seu Novo Imóvel</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <header>
-        <nav class="container">
-            <a href="{% url 'home' %}" class="logo">Seu Novo<span>Imóvel</span></a>
-            <ul class="nav-menu">
-                <li><a href="{% url 'home' %}">Voltar para a Busca</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main class="container property-detail-page" style="margin-top: 100px; margin-bottom: 50px;">
+{% block title %}{{ imovel.titulo }} - Detalhes{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+{% endblock %}
+
+{% block content %}
+    <div class="container property-detail-page" style="margin-top: 100px; margin-bottom: 50px;">
         
         <div style="margin-bottom: 1rem;">
             <a href="{% url 'home' %}" class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color); padding: 0.5rem 1rem;">
@@ -137,16 +120,17 @@
         </section>
         {% endif %}
 
-    </main>
+    </div>
     
     <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
         <img id="lightbox-img" src="">
     </div>
+{% endblock %}
 
- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
-    // --- 1. LIGHTBOX (Galeria) ---
     function openLightbox(url) {
         const lightbox = document.getElementById('lightbox');
         const img = document.getElementById('lightbox-img');
@@ -156,65 +140,41 @@
         }
     }
 
-    // --- 2. MAPA INTELIGENTE (Auto-Geocoding) ---
     document.addEventListener('DOMContentLoaded', function() {
-        // Elemento do mapa
         const mapContainer = document.getElementById('map');
-        
-        // Se não tiver container de mapa na tela, não faz nada (evita erros)
         if (!mapContainer) return;
 
-        // Dados vindos do Django
         const dbLat = "{{ imovel.latitude|default_if_none:'' }}".replace(',', '.');
         const dbLng = "{{ imovel.longitude|default_if_none:'' }}".replace(',', '.');
-        const enderecoBusca = "{{ imovel.bairro }}, {{ imovel.cidade }} - {{ imovel.estado }}"; // Busca pelo Bairro (Mais seguro/aprox)
+        const enderecoBusca = "{{ imovel.bairro }}, {{ imovel.cidade }} - {{ imovel.estado }}";
 
-        // Função para desenhar o mapa
         function initMap(lat, lng, isExact) {
             var map = L.map('map').setView([lat, lng], 15);
-
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
+                maxZoom: 19, attribution: '© OpenStreetMap'
             }).addTo(map);
-
-            // Se for exato (veio do banco), raio menor. Se for busca automática, raio maior (bairro).
             var radius = isExact ? 200 : 800; 
-
             L.circle([lat, lng], {
-                color: '#1a3a52',       
-                fillColor: '#2c5f7c',   
-                fillOpacity: 0.4,
-                radius: radius             
+                color: '#1a3a52', fillColor: '#2c5f7c', fillOpacity: 0.4, radius: radius             
             }).addTo(map);
         }
 
-        // --- LÓGICA DE DECISÃO ---
         if (dbLat && dbLng && !isNaN(parseFloat(dbLat))) {
-            // CASO 1: Temos coordenadas no banco? Usa elas!
             initMap(parseFloat(dbLat), parseFloat(dbLng), true);
         } else {
-            // CASO 2: Não tem coordenadas? Busca o endereço automaticamente!
-            console.log("Buscando coordenadas para: " + enderecoBusca);
-            
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoBusca)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        const lat = parseFloat(data[0].lat);
-                        const lon = parseFloat(data[0].lon);
-                        initMap(lat, lon, false); // false = localização aproximada
+                        initMap(parseFloat(data[0].lat), parseFloat(data[0].lon), false);
                     } else {
-                        // Se não achar nada, esconde a div do mapa para não ficar um quadrado cinza
                         mapContainer.parentElement.style.display = 'none';
                     }
                 })
                 .catch(err => {
-                    console.error("Erro ao buscar mapa:", err);
                     mapContainer.parentElement.style.display = 'none';
                 });
         }
     });
 </script>
-</body>
-</html>
+{% endblock %}

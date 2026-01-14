@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Seu Novo Imóvel{% endblock %}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <header>
+        <nav class="container">
+            <a href="{% url 'home' %}" class="logo">Seu Novo<span>Imóvel</span></a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{% url 'home' %}#comprar">Comprar</a></li>
+                <li><a href="{% url 'home' %}#alugar">Alugar</a></li>
+
+                {% if user.is_authenticated %}
+                    <li style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-size: 0.9rem; color: #666;">Olá, {{ user.first_name }}</span>
+                        
+                        <a href="{% url 'dashboard' %}" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-columns"></i> Painel
+                        </a>
+                        
+                        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; cursor: pointer; color: #dc3545; font-weight: 600; font-family: inherit; font-size: 1rem;" title="Sair">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" style="font-weight: 600;">Entrar</a></li>
+                    <li><a href="{% url 'cadastro' %}" class="btn-success">Anunciar Grátis</a></li>
+                {% endif %}
+            </ul>
+            
+            <div class="mobile-toggle" id="mobileToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer id="contato">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Seu Novo<span style="color: #2c5f7c;">Imóvel</span></h3>
+                    <p>O mais novo portal imobiliário do Brasil. Conectando sonhos.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> contato@seunovoimovel.com.br</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo/SP</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Seu Novo Imóvel. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        if(mobileToggle){
+            mobileToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                const icon = mobileToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+        }
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

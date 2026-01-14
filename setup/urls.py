@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('imoveis.urls')), # Conecta as rotas do app imoveis
+    path('conta/', include('accounts.urls')),
 ]
 
 # Isso permite ver as imagens upadas durante o desenvolvimento

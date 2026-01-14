@@ -1,94 +1,77 @@
-{% load static %}   
+{% extends 'base.html' %}
 {% load static humanize %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu Novo Imóvel - Portal Imobiliário</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
 
-    <header>
-        <nav class="container">
-            <div class="logo">Seu Novo<span>Imóvel</span></div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#comprar">Comprar</a></li>
-                <li><a href="#alugar">Alugar</a></li>
-                <li><a href="#anunciar" class="btn-success">Anunciar Grátis</a></li>
-            </ul>
-            <div class="mobile-toggle" id="mobileToggle">
-                <i class="fas fa-bars"></i>
-            </div>
-        </nav>
-    </header>
+{% block title %}Seu Novo Imóvel - Portal Imobiliário{% endblock %}
+
+{% block content %}
 
     <section class="hero" style="height: auto; min-height: 75vh; padding-bottom: 4rem;">
         <div class="hero-content">
-            <h1 style="font-size: 2.2rem; margin-top: 2rem;">O Mais Novo Portal Imobiliário de São Paulo</h1>
-            <p class="hero-subtitle">Negocie direto com o proprietário ou corretor. Sem burocracia.</p>
+            <h1 style="font-size: 2.5rem; margin-top: 2rem;">O Mais Novo Portal Imobiliário de São Paulo</h1>
+            <p class="hero-subtitle" style="font-size: 1.2rem; margin-bottom: 1rem;">Negocie direto com o proprietário ou corretor. Sem burocracia.</p>
             
-            <form action="{% url 'home' %}" method="GET" class="search-box" style="max-width: 850px; margin: 0 auto;">
+            <form action="{% url 'home' %}" method="GET" class="search-box-enhanced">
                 
-                <div class="search-field">
-                    <label for="location">Localização</label>
-                    <input type="text" name="cidade" id="location" placeholder="Cidade ou Bairro" value="{{ request.GET.cidade }}">
-                </div>
-                
-                <div class="search-field">
-                    <label for="type">Tipo</label>
-                    <select name="tipo" id="type">
-                        <option value="">Todos</option>
-                        <option value="CASA" {% if request.GET.tipo == 'CASA' %}selected{% endif %}>Casa</option>
-                        <option value="APARTAMENTO" {% if request.GET.tipo == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
-                        <option value="COBERTURA" {% if request.GET.tipo == 'COBERTURA' %}selected{% endif %}>Cobertura</option>
-                        <option value="TERRENO" {% if request.GET.tipo == 'TERRENO' %}selected{% endif %}>Terreno</option>
-                        <option value="COMERCIAL" {% if request.GET.tipo == 'COMERCIAL' %}selected{% endif %}>Comercial</option>
-                    </select>
-                </div>
-                
-                <div class="search-field">
-                    <label for="transaction">Negócio</label>
-                    <select name="finalidade" id="transaction">
-                        <option value="">Todos</option>
-                        <option value="VENDA" {% if request.GET.finalidade == 'VENDA' %}selected{% endif %}>Comprar</option>
-                        <option value="ALUGUEL" {% if request.GET.finalidade == 'ALUGUEL' %}selected{% endif %}>Alugar</option>
-                    </select>
-                </div>
-                
-                <div class="search-field" style="grid-column: span 2; display: flex; gap: 10px;">
-                    <div style="flex: 1;">
-                        <label for="min_price">Preço Mín.</label>
-                        <input type="number" name="preco_min" id="min_price" placeholder="R$ 0" value="{{ request.GET.preco_min }}">
+                <!-- LINHA 1: Campos Principais -->
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="location"><i class="fas fa-map-marker-alt"></i> Localização</label>
+                        <input type="text" name="cidade" id="location" placeholder="Cidade ou Bairro" value="{{ request.GET.cidade }}">
                     </div>
-                    <div style="flex: 1;">
-                        <label for="max_price">Preço Máx.</label>
-                        <input type="number" name="preco_max" id="max_price" placeholder="R$ Max" value="{{ request.GET.preco_max }}">
+                    
+                    <div class="search-field">
+                        <label for="type"><i class="fas fa-home"></i> Tipo de Imóvel</label>
+                        <select name="tipo" id="type">
+                            <option value="">Todos os Tipos</option>
+                            <option value="CASA" {% if request.GET.tipo == 'CASA' %}selected{% endif %}>Casa</option>
+                            <option value="SOBRADO" {% if request.GET.tipo == 'SOBRADO' %}selected{% endif %}>Sobrado</option>
+                            <option value="APARTAMENTO" {% if request.GET.tipo == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
+                            <option value="COBERTURA" {% if request.GET.tipo == 'COBERTURA' %}selected{% endif %}>Cobertura</option>
+                            <option value="TERRENO" {% if request.GET.tipo == 'TERRENO' %}selected{% endif %}>Terreno</option>
+                            <option value="COMERCIAL" {% if request.GET.tipo == 'COMERCIAL' %}selected{% endif %}>Comercial</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-field">
+                        <label for="transaction"><i class="fas fa-handshake"></i> Finalidade</label>
+                        <select name="finalidade" id="transaction">
+                            <option value="">Comprar ou Alugar</option>
+                            <option value="VENDA" {% if request.GET.finalidade == 'VENDA' %}selected{% endif %}>Comprar</option>
+                            <option value="ALUGUEL" {% if request.GET.finalidade == 'ALUGUEL' %}selected{% endif %}>Alugar</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="search-field">
-                    <label for="order">Ordenar</label>
-                    <select name="order" id="order">
-                        <option value="-id" {% if request.GET.order == '-id' %}selected{% endif %}>Recentes</option>
-                        <option value="preco" {% if request.GET.order == 'preco' %}selected{% endif %}>Menor Preço</option>
-                        <option value="-preco" {% if request.GET.order == '-preco' %}selected{% endif %}>Maior Preço</option>
-                    </select>
+                <!-- LINHA 2: Filtros Avançados -->
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="min_price"><i class="fas fa-dollar-sign"></i> Preço Mínimo</label>
+                        <input type="number" name="preco_min" id="min_price" placeholder="R$ 0" value="{{ request.GET.preco_min }}">
+                    </div>
+
+                    <div class="search-field">
+                        <label for="max_price"><i class="fas fa-dollar-sign"></i> Preço Máximo</label>
+                        <input type="number" name="preco_max" id="max_price" placeholder="R$ Sem limite" value="{{ request.GET.preco_max }}">
+                    </div>
+
+                    <div class="search-field">
+                        <label for="order"><i class="fas fa-sort-amount-down"></i> Ordenar por</label>
+                        <select name="order" id="order">
+                            <option value="-id" {% if request.GET.order == '-id' %}selected{% endif %}>Mais Recentes</option>
+                            <option value="preco" {% if request.GET.order == 'preco' %}selected{% endif %}>Menor Preço</option>
+                            <option value="-preco" {% if request.GET.order == '-preco' %}selected{% endif %}>Maior Preço</option>
+                        </select>
+                    </div>
                 </div>
-                
+
+                <!-- BOTÕES -->
                 <div class="search-actions">
                     <button type="submit" class="btn-search">
-                        <i class="fas fa-search"></i> Buscar
+                        <i class="fas fa-search"></i> Buscar Imóveis
                     </button>
                     
                     <a href="{% url 'home' %}" class="btn-reset">
-                        <i class="fas fa-trash-alt"></i> Limpar
+                        <i class="fas fa-redo"></i> Limpar Filtros
                     </a>
                 </div>
             </form>
@@ -300,78 +283,10 @@
         </div>
     </section>
 
-    <footer id="contato">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Seu Novo<span style="color: #2c5f7c;">Imóvel</span></h3>
-                    <p>O mais novo portal imobiliário do Brasil, conectando pessoas aos seus imóveis dos sonhos. Um produto Evotiva.</p>
-                    <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Para Você</h3>
-                    <ul class="footer-links">
-                        <li><a href="#comprar">Comprar Imóvel</a></li>
-                        <li><a href="#alugar">Alugar Imóvel</a></li>
-                        <li><a href="#anunciar">Anunciar Grátis</a></li>
-                        <li><a href="#como-funciona">Como Funciona</a></li>
-                    </ul>
-                </div>
+{% endblock %}
 
-                <div class="footer-section">
-                    <h3>Institucional</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Sobre Nós</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Trabalhe Conosco</a></li>
-                        <li><a href="#">Termos de Uso</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Contato</h3>
-                    <ul class="footer-links">
-                        <li><i class="fas fa-phone"></i> (11) 3456-7890</li>
-                        <li><i class="fas fa-envelope"></i> contato@seunovoimovel.com.br</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Av. Paulista, 1000 - São Paulo/SP</li>
-                        <li><i class="fas fa-clock"></i> Seg-Sex: 9h às 18h</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2026 Seu Novo Imóvel. Todos os direitos reservados. | CRECI 12345-J</p>
-            </div>
-        </div>
-    </footer>
-
+{% block extra_scripts %}
     <script>
-        const mobileToggle = document.getElementById('mobileToggle');
-        const navMenu = document.getElementById('navMenu');
-
-        mobileToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            const icon = mobileToggle.querySelector('i');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-        });
-
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                const icon = mobileToggle.querySelector('i');
-                icon.classList.add('fa-bars');
-                icon.classList.remove('fa-times');
-            });
-        });
-
         // --- LÓGICA DE FAVORITOS ---
         document.addEventListener('DOMContentLoaded', function() {
             const favoritos = JSON.parse(localStorage.getItem('imoveisFavoritos')) || [];
@@ -407,5 +322,4 @@
             localStorage.setItem('imoveisFavoritos', JSON.stringify(favoritos));
         }
     </script>
-</body>
-</html>
+{% endblock %}

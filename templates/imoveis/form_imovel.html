@@ -1,0 +1,313 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Imóvel - Seu Novo Imóvel</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <a href="{% url 'home' %}" class="logo">Seu Novo<span>Imóvel</span></a>
+            <ul class="nav-menu">
+                <li><a href="{% url 'home' %}">Voltar ao Início</a></li>
+                <li><a href="{% url 'dashboard' %}">Meus Imóveis</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- FORMULÁRIO -->
+    <div class="form-container wide">
+        <div class="form-header">
+            <h1><i class="fas fa-home"></i> Anunciar Novo Imóvel</h1>
+            <p>Preencha os dados do seu imóvel para publicar no portal</p>
+        </div>
+
+        <!-- MENSAGENS DE ERRO GLOBAIS -->
+        {% if form.errors %}
+        <div class="form-errors">
+            <h4><i class="fas fa-exclamation-triangle"></i> Atenção aos seguintes erros:</h4>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- SEÇÃO 1: INFORMAÇÕES BÁSICAS -->
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-info-circle"></i> Informações Básicas
+                </h3>
+
+                <div class="form-group">
+                    <label for="{{ form.titulo.id_for_label }}">Título do Anúncio <span class="required">*</span></label>
+                    {{ form.titulo }}
+                    <span class="help-text">Ex: "Apartamento 3 quartos com vista para o mar"</span>
+                    {% if form.titulo.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.titulo.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.tipo_imovel.id_for_label }}">Tipo de Imóvel <span class="required">*</span></label>
+                        {{ form.tipo_imovel }}
+                        {% if form.tipo_imovel.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.tipo_imovel.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.tipo_transacao.id_for_label }}">Tipo de Transação <span class="required">*</span></label>
+                        {{ form.tipo_transacao }}
+                        {% if form.tipo_transacao.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.tipo_transacao.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.descricao.id_for_label }}">Descrição do Imóvel <span class="required">*</span></label>
+                    {{ form.descricao }}
+                    <span class="help-text">Descreva as características e diferenciais do imóvel (mínimo 50 caracteres)</span>
+                    {% if form.descricao.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.descricao.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: LOCALIZAÇÃO -->
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-map-marker-alt"></i> Localização
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.cep.id_for_label }}">CEP</label>
+                        {{ form.cep }}
+                        <span class="help-text">Somente números</span>
+                        {% if form.cep.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.cep.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.estado.id_for_label }}">Estado <span class="required">*</span></label>
+                        {{ form.estado }}
+                        {% if form.estado.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.estado.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.cidade.id_for_label }}">Cidade <span class="required">*</span></label>
+                        {{ form.cidade }}
+                        {% if form.cidade.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.cidade.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.bairro.id_for_label }}">Bairro <span class="required">*</span></label>
+                        {{ form.bairro }}
+                        {% if form.bairro.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.bairro.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.endereco.id_for_label }}">Endereço Completo</label>
+                    {{ form.endereco }}
+                    <span class="help-text">Rua, número e complemento (opcional)</span>
+                    {% if form.endereco.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.endereco.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SEÇÃO 3: CARACTERÍSTICAS -->
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-th-large"></i> Características do Imóvel
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.quartos.id_for_label }}">Quartos <span class="required">*</span></label>
+                        {{ form.quartos }}
+                        {% if form.quartos.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.quartos.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.suites.id_for_label }}">Suítes</label>
+                        {{ form.suites }}
+                        <span class="help-text">Quantas suítes o imóvel possui?</span>
+                        {% if form.suites.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.suites.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.banheiros.id_for_label }}">Banheiros <span class="required">*</span></label>
+                        {{ form.banheiros }}
+                        {% if form.banheiros.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.banheiros.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.vagas_garagem.id_for_label }}">Vagas de Garagem</label>
+                        {{ form.vagas_garagem }}
+                        {% if form.vagas_garagem.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.vagas_garagem.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.area_total.id_for_label }}">Área Total (m²) <span class="required">*</span></label>
+                    {{ form.area_total }}
+                    <span class="help-text">Informe a área em metros quadrados</span>
+                    {% if form.area_total.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.area_total.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SEÇÃO 4: VALORES -->
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-dollar-sign"></i> Valores
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.preco.id_for_label }}">Preço <span class="required">*</span></label>
+                        {{ form.preco }}
+                        <span class="help-text">Valor de venda ou aluguel (R$)</span>
+                        {% if form.preco.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.preco.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.valor_condominio.id_for_label }}">Valor do Condomínio</label>
+                        {{ form.valor_condominio }}
+                        <span class="help-text">Se houver (R$)</span>
+                        {% if form.valor_condominio.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.valor_condominio.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.iptu.id_for_label }}">IPTU Anual</label>
+                    {{ form.iptu }}
+                    <span class="help-text">Valor anual do IPTU (R$)</span>
+                    {% if form.iptu.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.iptu.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SEÇÃO 5: FOTOS -->
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-images"></i> Fotos do Imóvel
+                </h3>
+
+                <div class="form-group">
+                    <div class="image-upload-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p><strong>Adicione fotos do seu imóvel</strong></p>
+                        <p>Formatos aceitos: JPG, PNG (máx. 5MB por arquivo)</p>
+                        {{ form.imagens }}
+                    </div>
+                    <span class="help-text">Dica: Imóveis com mais fotos recebem 3x mais visualizações!</span>
+                    {% if form.imagens.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.imagens.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- BOTÕES DE AÇÃO -->
+            <div class="form-actions">
+                <a href="{% url 'dashboard' %}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check-circle"></i> Publicar Anúncio
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 4rem;">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Seu Novo Imóvel - Uma empresa Evotiva. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
