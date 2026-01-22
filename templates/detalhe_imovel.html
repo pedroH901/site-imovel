@@ -92,6 +92,72 @@
                     <a href="https://wa.me/55{{ imovel.anunciante.telefone|cut:' '|cut:'-'|cut:'('|cut:')' }}?text=Olá, vi o imóvel '{{ imovel.titulo }}' no portal e gostaria de mais informações." target="_blank" class="btn-whatsapp">
                         <i class="fab fa-whatsapp"></i> Chamar no WhatsApp
                     </a>
+
+                    <aside class="property-sidebar">
+    <div class="price-card">
+        <span class="label">Valor de {{ imovel.get_tipo_transacao_display }}</span>
+        <div class="price">R$ {{ imovel.preco|intcomma }}</div>
+        
+        <div style="margin-bottom: 1.5rem; color: #666; font-size: 0.95rem;">
+            {% if imovel.valor_condominio %}
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px 0;">
+                    <span>Condomínio:</span> <strong>R$ {{ imovel.valor_condominio|intcomma }}</strong>
+                </div>
+            {% endif %}
+            
+            {% if imovel.tipo_transacao == 'ALUGUEL' and imovel.iptu %}
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px 0;">
+                    <span>IPTU:</span> <strong>R$ {{ imovel.iptu|intcomma }}</strong>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 1rem;">
+            <h4 style="margin-bottom: 10px; color: var(--primary-color);">Tenho Interesse</h4>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div style="margin-bottom: 10px;">
+                    {{ form.nome }}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    {{ form.email }}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    {{ form.telefone }}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    {{ form.mensagem }}
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">
+                    Enviar Mensagem
+                </button>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #666;">ou fale direto</div>
+        <a href="https://wa.me/55{{ imovel.anunciante.telefone|cut:' '|cut:'-'|cut:'('|cut:')' }}?text=Olá, vi o imóvel '{{ imovel.titulo }}' no portal..." target="_blank" class="btn-whatsapp">
+            <i class="fab fa-whatsapp"></i> Chamar no WhatsApp
+        </a>
+
+        <div class="advertiser-info" style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem;">
+            <div class="avatar-placeholder">{{ imovel.anunciante.user.first_name|first }}</div>
+            <div>
+                <h4>{{ imovel.anunciante.user.get_full_name }}</h4>
+                <p>Anunciante Verificado</p>
+            </div>
+        </div>
+    </div>
+</aside>
                 </div>
             </aside>
         </div>

@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Imovel, ImovelImagem
-from .forms import ImovelForm
+from .forms import ImovelForm, LeadForm
+from django.contrib import messages
 
 def index(request):
     # 1. ORDENAÇÃO (Correção do Bug)
@@ -126,3 +127,33 @@ def excluir_imovel(request, pk):
     imovel = get_object_or_404(Imovel, pk=pk, anunciante=request.user.anunciante_profile)
     imovel.delete()
     return redirect('dashboard')
+
+def detalhe_imovel(request, slug):
+    imovel = get_object_or_404(Imovel, slug=slug)
+    
+    # Lógica do Formulário de Contato
+    if request.method == 'POST':
+        form = LeadForm(request.POST)
+        if form.is_valid():
+            lead = form.save(commit=False)
+            lead.imovel = imovel # Vincula o lead a este imóvel
+            lead.save()
+            messages.success(request, 'Sua mensagem foi enviada com sucesso! O anunciante entrará em contato.')
+            # Limpa o formulário após enviar (redireciona para a mesma página)
+            return redirect('detalhe_imovel', slug=slug)
+    else:
+        form = LeadForm()
+
+    # Sugestão de "Veja Também"
+    relacionados = Imovel.objects.filter(
+        status='ATIVO', 
+        bairro=imovel.bairro
+    ).exclude(id=imovel.id)[:3]
+    
+    context = {
+        'imovel': imovel,
+        'relacionados': relacionados,
+        'form': form # Passamos o form para o template
+    }
+    return render(request, 'detalhe_imovel.html', context)
+

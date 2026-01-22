@@ -29,9 +29,13 @@
                     <li style="display: flex; align-items: center; gap: 15px;">
                         <span style="font-size: 0.9rem; color: #666;">Olá, {{ user.first_name }}</span>
                         
-                        <a href="{% url 'dashboard' %}" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                            <i class="fas fa-columns"></i> Painel
-                        </a>
+<a href="{% url 'dashboard' %}" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+    <i class="fas fa-columns"></i> Painel
+</a>
+
+<a href="{% url 'editar_perfil' %}" style="color: #666; font-size: 1.2rem; margin-left: 5px;" title="Meus Dados">
+    <i class="fas fa-cog"></i>
+</a>
                         
                         <form action="{% url 'logout' %}" method="post" style="display: inline;">
                             {% csrf_token %}

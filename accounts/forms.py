@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Anunciante
+from .models import Anunciante
 
 class CadastroForm(forms.ModelForm):
     # Campos do User (Django)
@@ -27,3 +28,21 @@ class CadastroForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError("As senhas não conferem.")
+        
+
+class EditarPerfilForm(forms.ModelForm):
+    # Campos do User (Nome e Sobrenome)
+    first_name = forms.CharField(label="Nome", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label="Sobrenome", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={'class': 'form-control', 'readonly': 'readonly'})) # Email geralmente não deixamos mudar fácil pra não quebrar login
+
+    class Meta:
+        model = Anunciante
+        # Campos do Anunciante
+        fields = ['telefone', 'creci', 'bairro_atuacao', 'bio']
+        widgets = {
+            'telefone': forms.TextInput(attrs={'class': 'form-control'}),
+            'creci': forms.TextInput(attrs={'class': 'form-control'}),
+            'bairro_atuacao': forms.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

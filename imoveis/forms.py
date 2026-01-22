@@ -1,6 +1,6 @@
 # imoveis/forms.py
 from django import forms
-from .models import Imovel
+from .models import Imovel, Lead
 
 # --- 1. Widget que permite selecionar múltiplos arquivos no HTML ---
 class MultipleFileInput(forms.ClearableFileInput):
@@ -45,3 +45,14 @@ class ImovelForm(forms.ModelForm):
             
         # Adiciona o atributo multiple no widget de imagens
         self.fields['imagens'].widget.attrs.update({'multiple': True})
+
+class LeadForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = ['nome', 'email', 'telefone', 'mensagem']
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Seu Nome'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Seu E-mail'}),
+            'telefone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Seu WhatsApp'}),
+            'mensagem': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Olá, gostaria de mais informações sobre este imóvel...'}),
+        }
