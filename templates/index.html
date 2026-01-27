@@ -10,9 +10,8 @@
             <h1 style="font-size: 2.5rem; margin-top: 2rem;">O Mais Novo Portal Imobiliário de São Paulo</h1>
             <p class="hero-subtitle" style="font-size: 1.2rem; margin-bottom: 1rem;">Negocie direto com o proprietário ou corretor. Sem burocracia.</p>
             
-            <form action="{% url 'home' %}" method="GET" class="search-box-enhanced">
+            <form action="{% url 'catalogo' %}" method="GET" class="search-box-enhanced">
                 
-                <!-- LINHA 1: Campos Principais -->
                 <div class="search-row">
                     <div class="search-field">
                         <label for="location"><i class="fas fa-map-marker-alt"></i> Localização</label>
@@ -23,12 +22,12 @@
                         <label for="type"><i class="fas fa-home"></i> Tipo de Imóvel</label>
                         <select name="tipo" id="type">
                             <option value="">Todos os Tipos</option>
-                            <option value="CASA" {% if request.GET.tipo == 'CASA' %}selected{% endif %}>Casa</option>
-                            <option value="SOBRADO" {% if request.GET.tipo == 'SOBRADO' %}selected{% endif %}>Sobrado</option>
-                            <option value="APARTAMENTO" {% if request.GET.tipo == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
-                            <option value="COBERTURA" {% if request.GET.tipo == 'COBERTURA' %}selected{% endif %}>Cobertura</option>
-                            <option value="TERRENO" {% if request.GET.tipo == 'TERRENO' %}selected{% endif %}>Terreno</option>
-                            <option value="COMERCIAL" {% if request.GET.tipo == 'COMERCIAL' %}selected{% endif %}>Comercial</option>
+                            <option value="CASA">Casa</option>
+                            <option value="SOBRADO">Sobrado</option>
+                            <option value="APARTAMENTO">Apartamento</option>
+                            <option value="COBERTURA">Cobertura</option>
+                            <option value="TERRENO">Terreno</option>
+                            <option value="COMERCIAL">Comercial</option>
                         </select>
                     </div>
                     
@@ -36,35 +35,33 @@
                         <label for="transaction"><i class="fas fa-handshake"></i> Finalidade</label>
                         <select name="finalidade" id="transaction">
                             <option value="">Comprar ou Alugar</option>
-                            <option value="VENDA" {% if request.GET.finalidade == 'VENDA' %}selected{% endif %}>Comprar</option>
-                            <option value="ALUGUEL" {% if request.GET.finalidade == 'ALUGUEL' %}selected{% endif %}>Alugar</option>
+                            <option value="VENDA">Comprar</option>
+                            <option value="ALUGUEL">Alugar</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- LINHA 2: Filtros Avançados -->
                 <div class="search-row">
                     <div class="search-field">
                         <label for="min_price"><i class="fas fa-dollar-sign"></i> Preço Mínimo</label>
-                        <input type="number" name="preco_min" id="min_price" placeholder="R$ 0" value="{{ request.GET.preco_min }}">
+                        <input type="number" name="preco_min" id="min_price" placeholder="R$ 0">
                     </div>
 
                     <div class="search-field">
                         <label for="max_price"><i class="fas fa-dollar-sign"></i> Preço Máximo</label>
-                        <input type="number" name="preco_max" id="max_price" placeholder="R$ Sem limite" value="{{ request.GET.preco_max }}">
+                        <input type="number" name="preco_max" id="max_price" placeholder="R$ Sem limite">
                     </div>
 
                     <div class="search-field">
                         <label for="order"><i class="fas fa-sort-amount-down"></i> Ordenar por</label>
                         <select name="order" id="order">
-                            <option value="-id" {% if request.GET.order == '-id' %}selected{% endif %}>Mais Recentes</option>
-                            <option value="preco" {% if request.GET.order == 'preco' %}selected{% endif %}>Menor Preço</option>
-                            <option value="-preco" {% if request.GET.order == '-preco' %}selected{% endif %}>Maior Preço</option>
+                            <option value="-id">Mais Recentes</option>
+                            <option value="preco">Menor Preço</option>
+                            <option value="-preco">Maior Preço</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- BOTÕES -->
                 <div class="search-actions">
                     <button type="submit" class="btn-search">
                         <i class="fas fa-search"></i> Buscar Imóveis
@@ -80,8 +77,14 @@
 
     <section class="featured" id="comprar" style="padding-top: 3rem; background: #fff;">
         <div class="container">
-            <div class="section-header">
-                <h2>Imóveis em Destaque</h2>
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: end; margin-bottom: 2rem;">
+                <div>
+                    <h2>Imóveis em Destaque</h2>
+                    <p style="color: #666; margin-top: 5px;">Confira as últimas novidades.</p>
+                </div>
+                <a href="{% url 'catalogo' %}" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">
+                    Ver todos os imóveis <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
 
             <div class="properties-grid">
@@ -154,16 +157,8 @@
                 {% endfor %}
             </div>
 
-            <div class="pagination" style="text-align: center; margin-top: 2rem; display: flex; justify-content: center; gap: 10px;">
-                {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}&cidade={{ request.GET.cidade }}&tipo={{ request.GET.tipo }}&finalidade={{ request.GET.finalidade }}&order={{ request.GET.order }}&preco_min={{ request.GET.preco_min }}&preco_max={{ request.GET.preco_max }}" class="btn-primary" style="padding: 0.5rem 1rem;">&laquo; Anterior</a>
-                {% endif %}
-                <span class="current" style="padding: 0.5rem 1rem; font-weight: bold;">
-                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                </span>
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&cidade={{ request.GET.cidade }}&tipo={{ request.GET.tipo }}&finalidade={{ request.GET.finalidade }}&order={{ request.GET.order }}&preco_min={{ request.GET.preco_min }}&preco_max={{ request.GET.preco_max }}" class="btn-primary" style="padding: 0.5rem 1rem;">Próxima &raquo;</a>
-                {% endif %}
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="{% url 'catalogo' %}" class="btn-primary" style="padding: 12px 30px;">Ver Catálogo Completo</a>
             </div>
         </div>
     </section>
@@ -200,7 +195,7 @@
                 <h2>Quer anunciar seu imóvel?</h2>
                 <p>Milhares de pessoas buscam aqui todos os dias.</p>
                 <div class="cta-buttons">
-                    <a href="#" class="btn-white">
+                    <a href="{% url 'cadastro' %}" class="btn-white">
                         <i class="fas fa-plus-circle"></i> Anunciar Grátis
                     </a>
                     <a href="#" class="btn-outline">Ver Planos Premium</a>

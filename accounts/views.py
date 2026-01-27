@@ -7,39 +7,45 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .models import Anunciante, Plano
 from .forms import CadastroForm, EditarPerfilForm 
+from imoveis.models import Lead
+
 def cadastro(request):
     if request.method == 'POST':
         form = CadastroForm(request.POST)
         if form.is_valid():
-            # 1. Cria o Usuário
+            # 1. Cria o Usuário Comum (Sempre acontece)
             user = User.objects.create_user(
-                username=form.cleaned_data['email'], 
+                username=form.cleaned_data['email'],
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password'],
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name']
             )
             
-            # 2. Cria o Perfil de Anunciante
-            plano_padrao = Plano.objects.filter(nome='START').first() or Plano.objects.first()
+            # 2. SE marcou que quer ser anunciante, cria o perfil
+            if form.cleaned_data['is_anunciante']:
+                plano_padrao = Plano.objects.filter(nome='START').first() or Plano.objects.first()
+                Anunciante.objects.create(
+                    user=user,
+                    telefone=form.cleaned_data['telefone'],
+                    creci=form.cleaned_data['creci'],
+                    bairro_atuacao=form.cleaned_data['bairro_atuacao'],
+                    plano=plano_padrao
+                )
+                messages.success(request, "Conta de anunciante criada com sucesso!")
+                login(request, user)
+                return redirect('dashboard') # Anunciante vai pro Dashboard
             
-            Anunciante.objects.create(
-                user=user,
-                telefone=form.cleaned_data['telefone'],
-                creci=form.cleaned_data['creci'],
-                bairro_atuacao=form.cleaned_data['bairro_atuacao'],
-                plano=plano_padrao
-            )
+            else:
+                # Usuário Comum
+                messages.success(request, "Cadastro realizado com sucesso!")
+                login(request, user)
+                return redirect('home') # Usuário comum vai pra Home
             
-            # 3. Loga e redireciona
-            login(request, user)
-            return redirect('dashboard')
     else:
         form = CadastroForm()
     
     return render(request, 'accounts/cadastro.html', {'form': form})
-
-# --- FUNÇÕES QUE FALTAVAM ---
 
 def login_view(request):
     if request.method == 'POST':
@@ -59,10 +65,13 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
+    # Tenta pegar o perfil. Se não tiver, é usuário comum.
     try:
-        meus_imoveis = request.user.anunciante_profile.imoveis.all()
+        anunciante = request.user.anunciante_profile
+        meus_imoveis = anunciante.imoveis.all()
     except:
-        meus_imoveis = [] # Previne erro se admin logar sem perfil de anunciante
+        # SE NÃO FOR ANUNCIANTE, mostra uma tela convidando
+        return render(request, 'accounts/dashboard_comum.html')
         
     context = {
         'imoveis': meus_imoveis
@@ -101,3 +110,17 @@ def editar_perfil(request):
         form = EditarPerfilForm(instance=anunciante, initial=initial_data)
     
     return render(request, 'accounts/editar_perfil.html', {'form': form})
+
+@login_required
+def ver_leads(request):
+    # Verifica se é anunciante
+    try:
+        anunciante = request.user.anunciante_profile
+    except:
+        return redirect('dashboard')
+        
+    # Busca Leads dos imóveis DESTE anunciante
+    # A lógica é: Pegar todos os leads onde lead.imovel.anunciante == eu
+    leads = Lead.objects.filter(imovel__anunciante=anunciante).order_by('-created_at')
+    
+    return render(request, 'accounts/leads.html', {'leads': leads})

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Meus Favoritos - Seu Novo Imóvel{% endblock %}
+
+{% block content %}
+<div style="background: var(--primary-color); padding: 30px 0; color: white; text-align: center; margin-top: 40px;">
+    <div class="container">
+        <h1 style="font-size: 1.8rem; margin: 0;"><i class="fas fa-heart"></i> Meus Favoritos</h1>
+    </div>
+</div>
+
+<div class="container" style="padding: 40px 0; min-height: 50vh;">
+    
+    <div id="loading" style="text-align: center; padding: 3rem;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
+        <p style="margin-top: 10px; color: #666;">Carregando seus imóveis salvos...</p>
+    </div>
+
+    <div id="empty-state" style="display: none; text-align: center; padding: 4rem;">
+        <i class="far fa-heart" style="font-size: 4rem; color: #ddd; margin-bottom: 1.5rem;"></i>
+        <h3 style="color: #333;">Sua lista de favoritos está vazia.</h3>
+        <p style="color: #666; margin-bottom: 2rem;">Salve imóveis que você gostou para vê-los aqui.</p>
+        <a href="{% url 'catalogo' %}" class="btn-primary">Ver Imóveis</a>
+    </div>
+
+    <div id="favorites-grid" class="properties-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        carregarFavoritos();
+    });
+
+    function carregarFavoritos() {
+        const loading = document.getElementById('loading');
+        const emptyState = document.getElementById('empty-state');
+        const grid = document.getElementById('favorites-grid');
+        
+        // 1. Ler localStorage
+        const favoritos = JSON.parse(localStorage.getItem('imoveisFavoritos')) || [];
+
+        // 2. Se estiver vazio, mostra estado vazio
+        if (favoritos.length === 0) {
+            loading.style.display = 'none';
+            emptyState.style.display = 'block';
+            grid.innerHTML = '';
+            return;
+        }
+
+        // 3. Se tiver IDs, chama o Django via AJAX
+        const idsParam = favoritos.join(','); // Ex: "1,5,8"
+        
+        fetch(`{% url 'carregar_favoritos' %}?ids=${idsParam}`)
+            .then(response => response.text())
+            .then(html => {
+                loading.style.display = 'none';
+                grid.innerHTML = html; // Injeta o HTML que veio do Django
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                loading.innerHTML = '<p>Erro ao carregar favoritos.</p>';
+            });
+    }
+
+    // Função para remover e atualizar a tela na hora
+    function removerFavoritoVisualmente(id) {
+        // 1. Remove do LocalStorage (usando a função global toggleFavorite se existir, ou manual)
+        let favoritos = JSON.parse(localStorage.getItem('imoveisFavoritos')) || [];
+        favoritos = favoritos.filter(favId => favId !== id);
+        localStorage.setItem('imoveisFavoritos', JSON.stringify(favoritos));
+        
+        // 2. Remove o Card da tela com animação
+        const card = document.getElementById(`card-${id}`);
+        if(card) {
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+                // Se não sobrou nada, mostra msg de vazio
+                if (favoritos.length === 0) {
+                    document.getElementById('empty-state').style.display = 'block';
+                }
+            }, 300);
+        }
+    }
+</script>
+{% endblock %}

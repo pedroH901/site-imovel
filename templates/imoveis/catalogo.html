@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Catálogo de Imóveis - Seu Novo Imóvel{% endblock %}
+
+{% block content %}
+
+<div style="background: var(--primary-color); padding: 30px 0; color: white; text-align: center; margin-top: 45px;">
+    <div class="container">
+        <h1 style="font-size: 1.8rem; margin: 0;">Catálogo de Imóveis</h1>
+    </div>
+</div>
+
+<div class="container search-layout">
+    
+    <aside class="filter-sidebar">
+        <form action="{% url 'catalogo' %}" method="GET">
+            
+            <div class="filter-header">
+                <h3 style="font-size: 1.2rem; margin: 0;"><i class="fas fa-filter"></i> Filtros</h3>
+                <a href="{% url 'catalogo' %}" style="font-size: 0.85rem; color: #666; text-decoration: underline;">Limpar</a>
+            </div>
+
+            <div class="filter-group">
+                <label>Localização</label>
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 13px; color: #999; font-size: 0.9rem;"></i>
+                    <input type="text" name="cidade" placeholder="Cidade ou Bairro" value="{{ request.GET.cidade }}" style="padding-left: 35px;">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Finalidade</label>
+                <select name="finalidade">
+                    <option value="">Qualquer</option>
+                    <option value="VENDA" {% if request.GET.finalidade == 'VENDA' %}selected{% endif %}>Comprar</option>
+                    <option value="ALUGUEL" {% if request.GET.finalidade == 'ALUGUEL' %}selected{% endif %}>Alugar</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Tipo de Imóvel</label>
+                <select name="tipo">
+                    <option value="">Todos</option>
+                    <option value="CASA" {% if request.GET.tipo == 'CASA' %}selected{% endif %}>Casa</option>
+                    <option value="APARTAMENTO" {% if request.GET.tipo == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
+                    <option value="COBERTURA" {% if request.GET.tipo == 'COBERTURA' %}selected{% endif %}>Cobertura</option>
+                    <option value="TERRENO" {% if request.GET.tipo == 'TERRENO' %}selected{% endif %}>Terreno</option>
+                    <option value="COMERCIAL" {% if request.GET.tipo == 'COMERCIAL' %}selected{% endif %}>Comercial</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Preço (R$)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" name="preco_min" placeholder="Mín" value="{{ request.GET.preco_min }}">
+                    <input type="number" name="preco_max" placeholder="Máx" value="{{ request.GET.preco_max }}">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Ordenar por</label>
+                <select name="order">
+                    <option value="-id" {% if request.GET.order == '-id' %}selected{% endif %}>Mais Recentes</option>
+                    <option value="preco" {% if request.GET.order == 'preco' %}selected{% endif %}>Menor Preço</option>
+                    <option value="-preco" {% if request.GET.order == '-preco' %}selected{% endif %}>Maior Preço</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer; margin-top: 10px;">
+                Aplicar Filtros
+            </button>
+        </form>
+    </aside>
+
+    <main>
+        <div style="margin-bottom: 20px; color: #666;">
+            Mostrando <strong>{{ page_obj.paginator.count }}</strong> imóveis encontrados.
+        </div>
+
+        <div class="properties-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+            {% for imovel in page_obj %}
+            <div class="property-card">
+                <div class="property-image">
+                    <a href="{% url 'detalhe_imovel' imovel.slug %}">
+                        {% if imovel.imagens.exists %}
+                            <img src="{{ imovel.imagens.first.imagem.url }}" alt="{{ imovel.titulo }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/800x600?text=Ver+Detalhes" alt="Sem Foto">
+                        {% endif %}
+                    </a>
+                    
+                    <button class="btn-favorite" onclick="toggleFavorite('{{ imovel.id }}')" data-id="{{ imovel.id }}">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    
+                    <div class="property-type">{{ imovel.get_tipo_transacao_display }}</div>
+                    <div class="property-badge">R$ {{ imovel.preco|intcomma }}</div>
+                </div>
+                
+                <div class="property-info">
+                    <h3><a href="{% url 'detalhe_imovel' imovel.slug %}">{{ imovel.titulo }}</a></h3>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i> {{ imovel.bairro }}, {{ imovel.cidade }}
+                    </div>
+                    <div class="property-features">
+                        <div class="feature"><i class="fas fa-bed"></i> {{ imovel.quartos }}</div>
+                        <div class="feature"><i class="fas fa-bath"></i> {{ imovel.banheiros }}</div>
+                        <div class="feature"><i class="fas fa-ruler-combined"></i> {{ imovel.area_total }}m²</div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+                <i class="fas fa-search" style="font-size: 3rem; color: #ddd;"></i>
+                <h3>Nenhum imóvel encontrado.</h3>
+            </div>
+            {% endfor %}
+        </div>
+
+{% if page_obj.has_other_pages %}
+        <div class="pagination" style="text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 10px;">
+            
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}&cidade={{ request.GET.cidade }}&tipo={{ request.GET.tipo }}&finalidade={{ request.GET.finalidade }}&order={{ request.GET.order }}&preco_min={{ request.GET.preco_min }}&preco_max={{ request.GET.preco_max }}" class="btn-primary" style="padding: 0.5rem 1rem;">
+                    &laquo; Anterior
+                </a>
+            {% endif %}
+            
+            <span class="current" style="padding: 0.5rem 1rem; font-weight: bold; background: #eee; border-radius: 4px; display: flex; align-items: center;">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&cidade={{ request.GET.cidade }}&tipo={{ request.GET.tipo }}&finalidade={{ request.GET.finalidade }}&order={{ request.GET.order }}&preco_min={{ request.GET.preco_min }}&preco_max={{ request.GET.preco_max }}" class="btn-primary" style="padding: 0.5rem 1rem;">
+                    Próxima &raquo;
+                </a>
+            {% endif %}
+            
+        </div>
+        {% elif page_obj.paginator.count > 0 %}
+            <div style="text-align: center; margin-top: 2rem; color: #999; font-size: 0.9rem;">
+                Fim dos resultados.
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+        function toggleFavorite(id) {
+            event.preventDefault(); 
+            
+            let favoritos = JSON.parse(localStorage.getItem('imoveisFavoritos')) || [];
+            const btn = document.querySelector(`.btn-favorite[data-id="${id}"]`);
+            const icon = btn.querySelector('i');
+
+            if (favoritos.includes(id)) {
+                favoritos = favoritos.filter(favId => favId !== id);
+                btn.classList.remove('active');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            } else {
+                favoritos.push(id);
+                btn.classList.add('active');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            }
+            localStorage.setItem('imoveisFavoritos', JSON.stringify(favoritos));
+        }
+</script>
+{% endblock %}

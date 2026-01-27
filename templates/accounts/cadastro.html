@@ -1,41 +1,103 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta - Seu Novo Imóvel</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body style="background: var(--bg-light); padding: 50px 0;">
 
-    <div class="container" style="max-width: 600px; background: white; padding: 3rem; border-radius: 12px; box-shadow: var(--shadow);">
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <a href="{% url 'home' %}" class="logo">Seu Novo<span>Imóvel</span></a>
-            <h2 style="margin-top: 1rem;">Crie sua conta Grátis</h2>
-            <p>Comece a anunciar seus imóveis hoje mesmo.</p>
+{% block title %}Crie sua Conta{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div class="form-container" style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: var(--shadow);">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: var(--primary-color);">Crie sua Conta</h1>
+            <p>Junte-se ao Seu Novo Imóvel hoje mesmo.</p>
         </div>
 
         <form method="post">
             {% csrf_token %}
             
-            {% for field in form %}
-            <div style="margin-bottom: 1rem;">
-                <label style="font-weight: 600; display: block; margin-bottom: 5px;">{{ field.label }}</label>
-                {{ field }}
-                {% if field.errors %}
-                    <small style="color: red;">{{ field.errors.0 }}</small>
-                {% endif %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group">
+                    <label>Sobrenome</label>
+                    {{ form.last_name }}
+                </div>
             </div>
-            {% endfor %}
 
-            <button type="submit" class="btn-success" style="width: 100%; margin-top: 1rem;">Criar Conta</button>
+            <div class="form-group">
+                <label>E-mail</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="error-msg">{{ form.email.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Senha</label>
+                    {{ form.password }}
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Senha</label>
+                    {{ form.confirm_password }}
+                    {% if form.confirm_password.errors %}<div class="error-msg">{{ form.confirm_password.errors }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    {{ form.is_anunciante }}
+                    <label for="checkAnunciante" style="margin: 0; font-weight: 600; cursor: pointer;">
+                        Quero anunciar imóveis (Sou Corretor/Proprietário)
+                    </label>
+                </div>
+            </div>
+
+            <div id="advertiser-fields" style="display: none; border-left: 3px solid var(--primary-color); padding-left: 20px; margin-bottom: 20px;">
+                <h4 style="margin-bottom: 15px; font-size: 1rem; color: #666;">Dados Profissionais</h4>
+                
+                <div class="form-group">
+                    <label>WhatsApp / Telefone</label>
+                    {{ form.telefone }}
+                    {% if form.telefone.errors %}<div class="error-msg">{{ form.telefone.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>CRECI (Opcional)</label>
+                        {{ form.creci }}
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro de Atuação</label>
+                        {{ form.bairro_atuacao }}
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Criar Conta</button>
+            
+            <p style="text-align: center; margin-top: 20px;">
+                Já tem uma conta? <a href="{% url 'login' %}">Entrar</a>
+            </p>
         </form>
-
-        <p style="text-align: center; margin-top: 1.5rem;">
-            Já tem conta? <a href="{% url 'login' %}" style="color: var(--accent-color); font-weight: bold;">Faça Login</a>
-        </p>
     </div>
+</div>
 
-</body>
-</html>
+<script>
+    // Script para mostrar/esconder campos
+    const checkbox = document.getElementById('checkAnunciante');
+    const fields = document.getElementById('advertiser-fields');
+
+    checkbox.addEventListener('change', function() {
+        if(this.checked) {
+            fields.style.display = 'block';
+        } else {
+            fields.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    .error-msg { color: #dc3545; font-size: 0.85rem; margin-top: 5px; }
+</style>
+{% endblock %}

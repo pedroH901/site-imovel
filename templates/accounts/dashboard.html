@@ -6,12 +6,19 @@
 {% block content %}
     <div class="container" style="padding-top: 120px; padding-bottom: 50px;">
         
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1 style="color: var(--primary-color);">Meus Imóveis</h1>
-            <a href="{% url 'cadastrar_imovel' %}" class="btn-primary">
-                <i class="fas fa-plus"></i> Novo Anúncio
-            </a>
-        </div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="color: var(--primary-color);">Meus Imóveis</h1>
+    
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'ver_leads' %}" class="btn-outline-primary">
+            <i class="fas fa-envelope"></i> Mensagens
+        </a>
+        
+        <a href="{% url 'cadastrar_imovel' %}" class="btn-primary">
+            <i class="fas fa-plus"></i> Novo Anúncio
+        </a>
+    </div>
+</div>
 
         {% if imoveis %}
             <div class="properties-grid">

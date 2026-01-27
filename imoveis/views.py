@@ -1,87 +1,121 @@
 # imoveis/views.py
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.core.paginator import Paginator
 from .models import Imovel, ImovelImagem
 from .forms import ImovelForm, LeadForm
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.contrib import messages
+from django.db.models import Q
+
+# --- VIEWS PÚBLICAS ---
 
 def index(request):
-    # 1. ORDENAÇÃO (Correção do Bug)
-    order = request.GET.get('order')
-    
-    # Se 'order' não existir ou for vazio string vazia '', usa o padrão '-id'
-    if not order:
-        order = '-id'
-        
-    imoveis = Imovel.objects.filter(status='ATIVO').order_by(order)
-    
-    # 2. FILTROS
-    cidade_busca = request.GET.get('cidade')
-    if cidade_busca:
-        imoveis = imoveis.filter(
-            Q(cidade__icontains=cidade_busca) | 
-            Q(bairro__icontains=cidade_busca)
-        )
-    
-    tipo_busca = request.GET.get('tipo')
-    if tipo_busca:
-        imoveis = imoveis.filter(tipo_imovel=tipo_busca)
-        
-    finalidade_busca = request.GET.get('finalidade')
-    if finalidade_busca:
-        imoveis = imoveis.filter(tipo_transacao=finalidade_busca)
+    imoveis = Imovel.objects.filter(status='ATIVO').order_by('-id')[:6]
+    context = {'page_obj': imoveis}
+    return render(request, 'index.html', context)
 
-    # 3. FILTRO DE PREÇO
+def catalogo(request):
+    imoveis = Imovel.objects.filter(status='ATIVO')
+    
+    # Filtros
+    cidade = request.GET.get('cidade')
+    if cidade:
+        imoveis = imoveis.filter(Q(cidade__icontains=cidade) | Q(bairro__icontains=cidade))
+    
+    tipo = request.GET.get('tipo')
+    if tipo:
+        imoveis = imoveis.filter(tipo_imovel=tipo)
+        
+    finalidade = request.GET.get('finalidade')
+    if finalidade:
+        imoveis = imoveis.filter(tipo_transacao=finalidade)
+        
     preco_min = request.GET.get('preco_min')
-    preco_max = request.GET.get('preco_max')
-
     if preco_min:
         imoveis = imoveis.filter(preco__gte=preco_min)
-    
+        
+    preco_max = request.GET.get('preco_max')
     if preco_max:
         imoveis = imoveis.filter(preco__lte=preco_max)
 
-    # 4. PAGINAÇÃO
-    paginator = Paginator(imoveis, 6)
+    # Ordenação
+    order = request.GET.get('order')
+    if not order:
+        order = '-id'
+    imoveis = imoveis.order_by(order)
+
+    # Paginação
+    paginator = Paginator(imoveis, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    context = {'page_obj': page_obj}
-    
-    return render(request, 'index.html', context)
+
+    return render(request, 'imoveis/catalogo.html', {'page_obj': page_obj})
 
 def detalhe_imovel(request, slug):
     imovel = get_object_or_404(Imovel, slug=slug)
     
-    # Sugestão de "Veja Também" (Mesmo bairro, excluindo o atual)
-    relacionados = Imovel.objects.filter(
-        status='ATIVO', 
-        bairro=imovel.bairro
-    ).exclude(id=imovel.id)[:3]
+    if request.method == 'POST':
+        form = LeadForm(request.POST)
+        if form.is_valid():
+            lead = form.save(commit=False)
+            lead.imovel = imovel
+            lead.save()
+            messages.success(request, 'Sua mensagem foi enviada com sucesso! O anunciante entrará em contato.')
+            return redirect('detalhe_imovel', slug=slug)
+    else:
+        form = LeadForm()
+
+    relacionados = Imovel.objects.filter(status='ATIVO', bairro=imovel.bairro).exclude(id=imovel.id)[:3]
     
     context = {
         'imovel': imovel,
-        'relacionados': relacionados
+        'relacionados': relacionados,
+        'form': form
     }
     return render(request, 'detalhe_imovel.html', context)
+
+
+# --- VIEWS DE FAVORITOS ---
+
+def favoritos(request):
+    return render(request, 'imoveis/favoritos.html')
+
+def listar_favoritos_ids(request):
+    ids_str = request.GET.get('ids', '')
+    if not ids_str:
+        return render(request, 'imoveis/partials/lista_cards.html', {'imoveis': []})
     
+    try:
+        ids = [int(i) for i in ids_str.split(',') if i.isdigit()]
+        imoveis = Imovel.objects.filter(id__in=ids, status='ATIVO')
+    except:
+        imoveis = []
+    
+    return render(request, 'imoveis/partials/lista_cards.html', {'imoveis': imoveis})
+
+
+# --- VIEWS DO ANUNCIANTE (BLINDADAS) ---
+
 @login_required
 def cadastrar_imovel(request):
+    # BLINDAGEM: Se não for anunciante, chuta pro dashboard comum
+    if not hasattr(request.user, 'anunciante_profile'):
+        messages.error(request, "Apenas anunciantes podem cadastrar imóveis.")
+        return redirect('dashboard')
+
     if request.method == 'POST':
         form = ImovelForm(request.POST, request.FILES)
         if form.is_valid():
-            # 1. Salva o Imóvel (mas não commitado ainda, pois falta o anunciante)
             imovel = form.save(commit=False)
             imovel.anunciante = request.user.anunciante_profile
-            imovel.save() # Agora salva com ID e Anunciante
+            imovel.save()
             
-            # 2. Processa as Imagens Múltiplas
-            imagens = request.FILES.getlist('imagens')
-            for img in imagens:
-                ImovelImagem.objects.create(imovel=imovel, imagem=img)
+            # Salvar Múltiplas Imagens
+            imagens = request.FILES.getlist('imagens_extras')
+            for f in imagens:
+                ImovelImagem.objects.create(imovel=imovel, imagem=f)
             
+            messages.success(request, 'Imóvel cadastrado com sucesso!')
             return redirect('dashboard')
     else:
         form = ImovelForm()
@@ -89,71 +123,51 @@ def cadastrar_imovel(request):
     return render(request, 'imoveis/form_imovel.html', {'form': form})
 
 @login_required
-def remover_imagem(request, imagem_id):
-    # Busca a imagem, mas só se ela pertencer a um imóvel do usuário logado (Segurança!)
-    imagem = get_object_or_404(ImovelImagem, id=imagem_id, imovel__anunciante=request.user.anunciante_profile)
-    
-    imovel_id = imagem.imovel.id # Guarda o ID para voltar depois
-    imagem.delete() # Apaga do banco e da pasta (graças ao signals.py)
-    
-    # Volta para a tela de edição desse imóvel
-    return redirect('editar_imovel', pk=imovel_id)
-
-@login_required
 def editar_imovel(request, pk):
-    # Garante que o imóvel existe e pertence ao usuário logado
-    imovel = get_object_or_404(Imovel, pk=pk, anunciante=request.user.anunciante_profile)
+    # Busca o imóvel e GARANTE que pertence ao usuário logado (segurança extra)
+    # Se o usuário não for dono ou não for anunciante, vai dar 404
+    if not hasattr(request.user, 'anunciante_profile'):
+        return redirect('dashboard')
+
+    imovel = get_object_or_404(Imovel, id=pk, anunciante=request.user.anunciante_profile)
     
     if request.method == 'POST':
-        # Passamos 'instance=imovel' para o form saber que é uma edição, não criação
         form = ImovelForm(request.POST, request.FILES, instance=imovel)
         if form.is_valid():
-            imovel = form.save()
+            form.save()
             
-            # Adiciona NOVAS fotos (sem apagar as antigas)
-            imagens = request.FILES.getlist('imagens')
-            for img in imagens:
-                ImovelImagem.objects.create(imovel=imovel, imagem=img)
-            
+            novas_imagens = request.FILES.getlist('imagens_extras')
+            for f in novas_imagens:
+                ImovelImagem.objects.create(imovel=imovel, imagem=f)
+                
+            messages.success(request, 'Imóvel atualizado!')
             return redirect('dashboard')
     else:
         form = ImovelForm(instance=imovel)
-    
-    # Passamos o imóvel também para poder listar as fotos antigas no HTML
+        
     return render(request, 'imoveis/form_imovel.html', {'form': form, 'imovel': imovel})
 
 @login_required
 def excluir_imovel(request, pk):
-    imovel = get_object_or_404(Imovel, pk=pk, anunciante=request.user.anunciante_profile)
+    if not hasattr(request.user, 'anunciante_profile'):
+        return redirect('dashboard')
+
+    imovel = get_object_or_404(Imovel, id=pk, anunciante=request.user.anunciante_profile)
     imovel.delete()
+    messages.success(request, 'Imóvel excluído com sucesso.')
     return redirect('dashboard')
 
-def detalhe_imovel(request, slug):
-    imovel = get_object_or_404(Imovel, slug=slug)
+@login_required
+def remover_imagem(request, imagem_id):
+    # Aqui precisamos de um cuidado extra: verificar se a imagem pertence a um imóvel do usuário
+    imagem = get_object_or_404(ImovelImagem, id=imagem_id)
     
-    # Lógica do Formulário de Contato
-    if request.method == 'POST':
-        form = LeadForm(request.POST)
-        if form.is_valid():
-            lead = form.save(commit=False)
-            lead.imovel = imovel # Vincula o lead a este imóvel
-            lead.save()
-            messages.success(request, 'Sua mensagem foi enviada com sucesso! O anunciante entrará em contato.')
-            # Limpa o formulário após enviar (redireciona para a mesma página)
-            return redirect('detalhe_imovel', slug=slug)
-    else:
-        form = LeadForm()
-
-    # Sugestão de "Veja Também"
-    relacionados = Imovel.objects.filter(
-        status='ATIVO', 
-        bairro=imovel.bairro
-    ).exclude(id=imovel.id)[:3]
-    
-    context = {
-        'imovel': imovel,
-        'relacionados': relacionados,
-        'form': form # Passamos o form para o template
-    }
-    return render(request, 'detalhe_imovel.html', context)
-
+    # Verifica se o dono do imóvel é o usuário logado
+    if imagem.imovel.anunciante.user != request.user:
+        messages.error(request, "Você não tem permissão para fazer isso.")
+        return redirect('dashboard')
+        
+    imovel_id = imagem.imovel.id
+    imagem.delete()
+    messages.success(request, "Imagem removida.")
+    return redirect('editar_imovel', pk=imovel_id)

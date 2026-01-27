@@ -1,0 +1,41 @@
+{% load humanize %}
+
+{% for imovel in imoveis %}
+<div class="property-card" id="card-{{ imovel.id }}">
+    <div class="property-image">
+        <a href="{% url 'detalhe_imovel' imovel.slug %}">
+            {% if imovel.imagens.exists %}
+                <img src="{{ imovel.imagens.first.imagem.url }}" alt="{{ imovel.titulo }}">
+            {% else %}
+                <img src="https://via.placeholder.com/800x600?text=Ver+Detalhes" alt="Sem Foto">
+            {% endif %}
+        </a>
+        
+        <button class="btn-favorite active" onclick="removerFavoritoVisualmente('{{ imovel.id }}')" title="Remover dos favoritos">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="property-type">{{ imovel.get_tipo_transacao_display }}</div>
+        <div class="property-badge">R$ {{ imovel.preco|intcomma }}</div>
+    </div>
+    
+    <div class="property-info">
+        <h3><a href="{% url 'detalhe_imovel' imovel.slug %}">{{ imovel.titulo }}</a></h3>
+        
+        <div class="property-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ imovel.bairro }}, {{ imovel.cidade }}</span>
+        </div>
+        
+        <div class="property-features">
+            <div class="feature"><i class="fas fa-bed"></i> <span>{{ imovel.quartos }}</span></div>
+            <div class="feature"><i class="fas fa-bath"></i> <span>{{ imovel.banheiros }}</span></div>
+            <div class="feature"><i class="fas fa-ruler-combined"></i> <span>{{ imovel.area_total }} m²</span></div>
+        </div>
+    </div>
+</div>
+{% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+        <p>Alguns imóveis salvos podem não estar mais disponíveis.</p>
+    </div>
+{% endfor %}

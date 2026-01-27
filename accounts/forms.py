@@ -2,32 +2,50 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Anunciante
-from .models import Anunciante
 
-class CadastroForm(forms.ModelForm):
-    # Campos do User (Django)
-    first_name = forms.CharField(label="Nome", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Seu Nome'}))
-    last_name = forms.CharField(label="Sobrenome", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Seu Sobrenome'}))
+class CadastroForm(forms.Form):
+    # Campos do Usuário (Obrigatórios para todos)
+    first_name = forms.CharField(label="Nome", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: João'}))
+    last_name = forms.CharField(label="Sobrenome", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Silva'}))
     email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'seu@email.com'}))
-    password = forms.CharField(label="Senha", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Senha segura'}))
-    confirm_password = forms.CharField(label="Confirmar Senha", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Repita a senha'}))
+    password = forms.CharField(label="Senha", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    confirm_password = forms.CharField(label="Confirmar Senha", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
-    # Campos do Anunciante (Nosso Model)
-    telefone = forms.CharField(label="WhatsApp", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(11) 99999-9999'}))
-    creci = forms.CharField(label="CRECI (Opcional)", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Se for corretor'}))
-    bairro_atuacao = forms.CharField(label="Bairro de Atuação", required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Tatuapé'}))
+    # Pergunta chave
+    is_anunciante = forms.BooleanField(
+        label="Quero anunciar imóveis", 
+        required=False, 
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'checkAnunciante'})
+    )
 
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'password']
+    # Campos do Anunciante (Opcionais no form, validados depois)
+    telefone = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control phone-mask', 'placeholder': '(00) 00000-0000'}))
+    creci = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional para proprietários'}))
+    bairro_atuacao = forms.CharField(required=False, label="Bairro de Atuação", widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Este e-mail já está cadastrado.")
+        return email
 
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
+        is_anunciante = cleaned_data.get("is_anunciante")
 
-        if password != confirm_password:
-            raise forms.ValidationError("As senhas não conferem.")
+        # Valida senhas iguais
+        if password and confirm_password and password != confirm_password:
+            self.add_error('confirm_password', "As senhas não conferem.")
+
+        # Validação condicional: Se marcou "Quero Anunciar", Telefone vira obrigatório
+        if is_anunciante:
+            if not cleaned_data.get('telefone'):
+                self.add_error('telefone', "Telefone é obrigatório para anunciantes.")
+            # CRECI pode continuar opcional (ex: proprietário direto), ou você obriga aqui se quiser.
+        
+        return cleaned_data
         
 
 class EditarPerfilForm(forms.ModelForm):

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="padding-top: 150px; text-align: center; min-height: 60vh;">
+    <i class="fas fa-user" style="font-size: 4rem; color: #ddd;"></i>
+    <h2 style="margin: 20px 0;">Olá, {{ user.first_name }}!</h2>
+    <p>Você está logado como um usuário comum.</p>
+    <p>Acesse seus favoritos ou busque novos imóveis.</p>
+    
+    <div style="margin-top: 30px;">
+        <a href="{% url 'favoritos' %}" class="btn-primary">Meus Favoritos</a>
+        <a href="{% url 'home' %}" class="btn-outline">Voltar para Home</a>
+    </div>
+    
+    <hr style="margin: 40px auto; max-width: 400px;">
+    
+    <p style="font-size: 0.9rem; color: #666;">Quer começar a vender?</p>
+    <button onclick="alert('Funcionalidade de Upgrade em breve!')" class="btn-success">
+        Torne-se um Anunciante
+    </button>
+</div>
+{% endblock %}

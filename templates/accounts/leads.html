@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Minhas Mensagens - Seu Novo Imóvel{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="color: var(--primary-color);">Mensagens Recebidas</h1>
+        <a href="{% url 'dashboard' %}" class="btn-outline">Voltar ao Painel</a>
+    </div>
+
+    {% if leads %}
+        <div style="display: grid; gap: 20px;">
+            {% for lead in leads %}
+            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <strong style="color: var(--primary-color); font-size: 1.1rem;">{{ lead.nome }}</strong>
+                    <span style="color: #999; font-size: 0.85rem;">{{ lead.created_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                
+                <p style="margin-bottom: 5px;"><strong>Interesse em:</strong> <a href="{% url 'detalhe_imovel' lead.imovel.slug %}">{{ lead.imovel.titulo }}</a></p>
+                <p style="margin-bottom: 5px;"><strong>Email:</strong> {{ lead.email }}</p>
+                <p style="margin-bottom: 15px;"><strong>Tel:</strong> {{ lead.telefone }}</p>
+                
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 4px; font-style: italic; color: #555;">
+                    "{{ lead.mensagem }}"
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <a href="https://wa.me/55{{ lead.telefone|cut:' '|cut:'-'|cut:'('|cut:')' }}" target="_blank" class="btn-whatsapp" style="padding: 5px 15px; font-size: 0.9rem;">
+                        <i class="fab fa-whatsapp"></i> Responder no WhatsApp
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 4rem; background: white; border-radius: 12px; border: 1px solid #eee;">
+            <i class="far fa-envelope-open" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+            <h3>Nenhuma mensagem ainda.</h3>
+            <p>Quando alguém se interessar pelos seus imóveis, aparecerá aqui.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
